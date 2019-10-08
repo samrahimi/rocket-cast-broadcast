@@ -10,7 +10,7 @@
     
       <style>
         body {
-          margin: 10;
+          margin: 0;
           padding: 0;
         }
         #wrapper {
@@ -26,13 +26,45 @@
             padding: 0;
             width: 100%;
             height: 100%;
+            z-index:1;
         }
-        #unmute-overlay {
+
+        #wrapper #loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color:black;
+            z-index:2000;
+        }
+
+        #wrapper #controls-overlay {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            z-index:1999;
+        }
+        #wrapper #controls-overlay a img {
+          width:15%;
+          max-width:200px;
+        }
+
+        #wrapper #controls-overlay a {
+          display:block;
+        }
+
+
+
+        #wrapper #unmute-overlay {
           position: absolute;
           top: 0;
           left: 0;
+          z-index:1998;
         }
-        #unmute-overlay a {
+        #wrapper #unmute-overlay a {
           padding: 10px;
           display: block;
         }
@@ -42,14 +74,21 @@
     <script>
               var player; //will hold YT player ref
     </script>
-    <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
     <div id="wrapper">
-     <div id="player"></div>
-    </div>
-    <div id="unmute-overlay">
-            <a href="#" id="unmute-initial" onclick="javascript:player.unMute(); return false;">
-              <img src="img/unmute-cta.png" style="width:300px; border:0px" />
-            </a>
+        <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
+      <div id="player"></div>
+      <div id="controls-overlay">
+        <a href="#" id="resync-button">
+          <img src="img/sync-cta.png" style="width:300px; border:0px" />
+        </a>
+      </div>
+      <div id="unmute-overlay">
+          <a href="#" id="unmute-initial" onclick="javascript:player.unMute(); return false;">
+            <img src="img/unmute-cta.png" style="width:300px; border:0px" />
+          </a>
+      </div>
+
+      <div id="loading-overlay"></div>
     </div>
     <script>
       // 2. This code loads the IFrame Player API code asynchronously.
@@ -86,24 +125,51 @@
       function onPlayerReady(event) {
         event.target.mute();
         getChannelData('TrueLifeTV', (json) => {
-          event.target.loadPlaylist({list:json.playlistId,
+          //cue the playlist. This gets the video IDs without costing me an API call to gdata
+          event.target.cuePlaylist({list:json.playlistId,
                       listType:'playlist',
-                      index:0,
-                      startSeconds:parseInt(json.elapsedTime/1000),
-                      suggestedQuality:'medium'})
+                      //index:0,
+                      //startSeconds:parseInt(json.elapsedTime/1000),
+                      //suggestedQuality:'medium'
+                    })
         })
       }
 
-      // 5. The API calls this function when the player's state changes.
-      //    In order to fuck with the Apple restrictions on autoplay video with audio
-      //    we mute the player before loading the playlist above, and then unmute it once
-      //    playback has started. Sorry, Apple ;) 
+      // The player fires events here when asynchronous operations complete, or there is a 
+      // change in playback state (caused by user or otherwise). 
       var initialLoadComplete = false;
 
       function onPlayerStateChange(event) {
-        if (event.data == YT.PlayerState.PLAYING && !initialLoadComplete) {
-          //player.unMute();
+        //This is called when cuePlaylist is done, and we can get the video ids.
+        //We then get the details of the videos, so we can calculate the start time
+        if (event.data == 5 && !initialLoadComplete) {
           initialLoadComplete = true;
+
+          var videoIds = player.getPlaylist();
+          getPlaylistDetails(videoIds, (details)=> {
+            //make the calculation of playlist index and start time based on playlist duration and elapsed time
+            [index, offset] = calculateSync(details, parseInt(channelData.elapsedTime / 1000))
+
+            //load the playlist and start playing appropriately. 
+            player.setLoop(true)
+            player.setShuffle(false)
+            player.playVideoAt(index)
+            player.seekTo(offset, true)
+            /*
+            player.loadPlaylist({
+                      list:videoIds,
+                      listType:'playlist',
+                      index:index,
+                      startSeconds:offset,
+                      //suggestedQuality:'medium'
+                    }) */
+          })
+        }
+        if (event.data == YT.PlayerState.PLAYING && initialLoadComplete) {
+          //player.unMute();
+          //initialLoadComplete = true;
+          $("#loading-overlay").hide()
+          $("#controls-overlay").show()
         }
       }
       function stopVideo() {
@@ -116,6 +182,10 @@
           player.unMute(); 
           $("#unmute-overlay").hide()
           return false
+        })
+        $("#resync-button").on("click", (e) => {
+          resync()
+          e.preventDefault()
         })
       })
     </script>
