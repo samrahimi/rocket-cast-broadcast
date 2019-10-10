@@ -1,74 +1,15 @@
 <!DOCTYPE html>
 <html>
   <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
       <script
       src="https://code.jquery.com/jquery-3.4.1.min.js"
       integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
       crossorigin="anonymous"></script>
 
       <script src="video.js"></script>
-    
-      <style>
-        body {
-          margin: 0;
-          padding: 0;
-        }
-        #wrapper {
-            position: relative;
-            padding: 0 0 56.25% 0;
-            height: 0;
-        }
-        #wrapper iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            z-index:1;
-        }
-
-        #wrapper #loading-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background-color:black;
-            z-index:2000;
-        }
-
-        #wrapper #controls-overlay {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            z-index:1999;
-        }
-        #wrapper #controls-overlay a img {
-          width:15%;
-          max-width:200px;
-        }
-
-        #wrapper #controls-overlay a {
-          display:block;
-        }
-
-
-
-        #wrapper #unmute-overlay {
-          position: absolute;
-          top: 0;
-          left: 0;
-          z-index:1998;
-        }
-        #wrapper #unmute-overlay a {
-          padding: 10px;
-          display: block;
-        }
-      </style>
+      <link rel="stylesheet" href="video.css" />
   </head>
   <body>
     <script>
@@ -77,17 +18,24 @@
     <div id="wrapper">
         <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
       <div id="player"></div>
+      <!-- A transparent overlay that accomplishes what showinfo: 0 used to do, and 
+           prevents the YouTube info UI from being shown or interacted with -->
+      <div id="clearcoat"></div>
+      <!-- Control bar -->
       <div id="controls-overlay">
         <a href="#" id="resync-button">
-          <img src="img/sync-cta.png" style="width:300px; border:0px" />
+          <img src="img/sync-cta.png" style="border:0px" />
         </a>
       </div>
+      <!-- Initial unmute for mobile-->
       <div id="unmute-overlay">
-          <a href="#" id="unmute-initial" onclick="javascript:player.unMute(); return false;">
-            <img src="img/unmute-cta.png" style="width:300px; border:0px" />
+          <a href="#" id="unmute-initial">
+            <img src="img/unmute-cta.png" style="border:0px" />
           </a>
       </div>
 
+      <!-- Container for UI to show while waiting for player to load.
+           This would be a good place to stick a box ad -->
       <div id="loading-overlay"></div>
     </div>
     <script>
@@ -187,7 +135,8 @@
           resync()
           e.preventDefault()
         })
+        $("#clearcoat").on("click", (e) => {e.preventDefault()})
       })
     </script>
-
+  </body>
 </html>

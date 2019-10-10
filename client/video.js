@@ -1,5 +1,5 @@
-const serverUrl='https://3de017c2.ngrok.io'
-const defaultChannelUrl='https://3de017c2.ngrok.io/channel/TrueLifeTV'
+const serverUrl='https://cf268dba.ngrok.io'
+const defaultChannelUrl='https://cf268dba.ngrok.io/channel/TrueLifeTV'
 const youtubeAPIUrl = 'https://www.googleapis.com/youtube/v3/videos?part=contentDetails&key=&id='
 channelData = {};
 playlistDetails=[]
@@ -109,3 +109,18 @@ const restartPlaylist= (channelId, callback) => {
         callback(channelData)
     })
 }
+
+             // Read a page's GET URL variables and return them as an associative array.
+             const getUrlVars = () =>
+             {
+                 var vars = [], hash;
+                 var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+                 for(var i = 0; i < hashes.length; i++)
+                 {
+                     hash = hashes[i].split('=');
+                     vars.push(hash[0]);
+                     vars[hash[0]] = hash[1];
+                 }
+                 return vars;
+             }
+     

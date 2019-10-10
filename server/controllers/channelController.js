@@ -27,6 +27,11 @@ const updateElapsedTime= (channelId) => {
     return channel
 }
 module.exports = {
+    //global create or update channel data directly
+    //not secure
+    createOrUpdateChannel: (req, res) => {
+        channels[req.body.channelName] = req.body.channelData
+    },
     //sets the YouTube playlist and starts playing from the beginning
     //setting an empty playlist will cause startTime and elapsedTime to reset to 0
     //so that the client knows not to play anything

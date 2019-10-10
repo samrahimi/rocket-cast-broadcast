@@ -37,7 +37,10 @@
   </head>
   <body>
     <script src="video.js"></script>
-
+    <script>
+        //select channel with querystring ...admin.html?channel=
+        window['selectedChannel'] = getUrlVars()["channel"] || "TrueLifeTV"
+    </script>
     <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
     <div>
         <b>Current Status for TruelifeTV:</b><br />
@@ -48,21 +51,24 @@
     <br /><br />
 
     <div>
-        <b>Update Playlist For TrueLifeTV:</b> <br />
+        <b>Update Playlist For <ch>TrueLifeTV</ch>:</b> <br />
         <input id="newPlaylistId" type="text" placeholder="YouTube Playlist ID" /> 
         <button id="updatePlaylist">Save</button>
     </div>
     <br /><br />
     <div>
-            <b>Restart Broadcast For TrueLifeTV:</b> <br />
+            <b>Restart Broadcast For <ch>TrueLifeTV</ch>:</b> <br />
             <button id="restartBroadcast">Restart</button>
     </div>
     
     <script>
+   
+
       $(() => {
-        getChannelData('TrueLifeTV', (json) => {$("#channelJson").html(JSON.stringify(json, null, 2))})
+
+        getChannelData(window['selectedChannel'], (json) => {$("#channelJson").html(JSON.stringify(json, null, 2))})
         $("#updatePlaylist").on("click", () => {
-            setNewPlaylistForChannel($("#newPlaylistId").val(), 'TrueLifeTV', 
+            setNewPlaylistForChannel($("#newPlaylistId").val(), window['selectedChannel'], 
             (json) => {
                 $("#channelJson").html(JSON.stringify(json, null, 2))
             });
@@ -70,7 +76,7 @@
 
 
         $("#restartBroadcast").on("click", () => {
-            restartPlaylist("TrueLifeTV", (json) => {
+            restartPlaylist(window["selectedChannel"], (json) => {
                 $("#channelJson").html(JSON.stringify(json, null, 2))
             })
         })
