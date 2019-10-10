@@ -24,9 +24,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use(express.static(__dirname, { dotfiles: 'allow' } ));
-app.use((req, res) => {
-        res.send('Hello there !');
-});
 
 //REST API routes
 var channelController = require('./controllers/channelController.js')
