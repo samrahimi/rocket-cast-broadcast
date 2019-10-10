@@ -1,6 +1,9 @@
-const serverUrl='https://samrahimi.com'
-const defaultChannelUrl='https://samrahimi.com/channel/TrueLifeTV'
-const youtubeAPIUrl = 'https://www.googleapis.com/youtube/v3/videos?part=contentDetails&key=&id='
+const serverUrl='' //if running on a different host then the front end, otherwise leave blank
+const defaultChannelUrl='/channel/TrueLifeTV'
+
+
+//Get your own key by going to google cloud api console, youtube API v3. The one below works only for truelife sites
+const youtubeAPIUrl = 'https://www.googleapis.com/youtube/v3/videos?part=contentDetails&key=AIzaSyDyqJKwMF_vhGqNUmDbbEkvQ55E9ZDhSnc&id='
 channelData = {};
 playlistDetails=[]
 
