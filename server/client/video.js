@@ -1,5 +1,5 @@
-const serverUrl='https://cf268dba.ngrok.io'
-const defaultChannelUrl='https://cf268dba.ngrok.io/channel/TrueLifeTV'
+const serverUrl='https://samrahimi.com'
+const defaultChannelUrl='https://samrahimi.com/channel/TrueLifeTV'
 const youtubeAPIUrl = 'https://www.googleapis.com/youtube/v3/videos?part=contentDetails&key=&id='
 channelData = {};
 playlistDetails=[]

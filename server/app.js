@@ -1,19 +1,32 @@
 //Truelife TV API - POC / MVP
 //Functionality: lets the site administrator set or reset the YouTube playlist being streamed on the client
 //provides the current playlist ID and last update timestamp to the client when requested
+const fs = require('fs');
+const http = require('http');
+const https = require('https');
+const express = require('express');
+const cors = require('cors')
+const app = express();
+// Certificate
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/samrahimi.com/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/samrahimi.com/cert.pem', 'utf8');
+const ca = fs.readFileSync('/etc/letsencrypt/live/samrahimi.com/chain.pem', 'utf8');
+const credentials = {
+        key: privateKey,
+        cert: certificate,
+        ca: ca
+};
 
-
-//Server config
-var express = require('express');
-var cors = require('cors')
-
-var app = express(),
-port = process.env.PORT || 3000,
-bodyParser = require('body-parser')
+const bodyParser = require('body-parser')
 
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+app.use(express.static(__dirname, { dotfiles: 'allow' } ));
+app.use((req, res) => {
+        res.send('Hello there !');
+});
 
 //REST API routes
 var channelController = require('./controllers/channelController.js')
@@ -25,7 +38,14 @@ app.route('/channel/:channel')
 app.route('/channel/:channel/restart')
    .get(channelController.restart)
 
+// Starting both http & https servers
+const httpServer = http.createServer(app);
+const httpsServer = https.createServer(credentials, app);
+httpServer.listen(80, () => {
+        console.log('HTTP Server running on port 80');
+});
+httpsServer.listen(443, () => {
+        console.log('HTTPS Server running on port 443');
+});
 
-//Start the server
-app.listen(port)
-console.log("Running on port "+port)
+console.log("Running")
