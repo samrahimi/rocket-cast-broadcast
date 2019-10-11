@@ -126,9 +126,11 @@
 
 
       $(() => {
-        $("#unmute-initial").on("click", () => {
+        $("#unmute-initial").on("click", (e) => {
           player.unMute(); 
           $("#unmute-overlay").hide()
+          e.preventDefault()
+
           //return false
         })
         $("#resync-button").on("click", (e) => {
