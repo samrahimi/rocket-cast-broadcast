@@ -19,8 +19,8 @@
         <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
       <div id="player"></div>
       <!-- A transparent overlay that accomplishes what showinfo: 0 used to do, and 
-           prevents the YouTube info UI from being shown or interacted with
-      <div id="clearcoat"></div> -->
+           prevents the YouTube info UI from being shown or interacted with -->
+      <div id="clearcoat"></div> 
       <!-- Control bar -->
       <div id="controls-overlay">
         <a href="#" id="resync-button">
@@ -29,7 +29,7 @@
       </div>
       <!-- Initial unmute for mobile-->
       <div id="unmute-overlay">
-          <a href="javascript:player.unMute();" id="unmute-initial">
+          <a href="javascript:player.unMute();$('#unmute-overlay').hide()" id="unmute-initial">
               <img src="img/unmute-cta.png" style="border:0px" />
           </a>
       </div>
@@ -141,11 +141,5 @@
         //$("#clearcoat").on("click", (e) => {e.preventDefault()})
       })
     </script>
-    <br /><br />
-    
-    <a href="javascript:player.unMute();" id="unmute-initial">
-        <img src="img/unmute-cta.png" style="border:0px" />
-    </a>
-
   </body>
 </html>
