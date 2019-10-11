@@ -54,7 +54,21 @@ module.exports = {
    //returns the latest info about the channel, including yt playlist id & elapsed time since playback was started
    //this is enough info for the client to calculate the index and offset to sync the viewer with others
    //(note that the client must get the playlist details, including lengths of each video, directly from youtube)
+   //
+   //this is a get-or-create... if channel is nonexistent, we create it and don't update the elapsed time
    getStatus: (req, res) => {
-       res.json(updateElapsedTime(req.params.channel))
+       if (!channels[req.params.channel]) {
+        channels[req.params.channel] = {
+            startTime: 0,
+            elapsedTime: 0,
+            playlistId: '',
+            channelName: '',
+            channelOwner: '',
+            channelDescription: ''
+        }
+        res.json(channels.req.params.channel)   
+       } else {
+        res.json(updateElapsedTime(req.params.channel))
+       }
    }
 }

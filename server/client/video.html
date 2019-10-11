@@ -9,9 +9,15 @@
       crossorigin="anonymous"></script>
 
       <script src="video.js"></script>
+  
       <link rel="stylesheet" href="video.css" />
   </head>
   <body>
+    <script>
+        //select channel with querystring ...admin.html?channel=
+        window['selectedChannel'] = getUrlVars()["channel"] || "TrueLifeTV"
+    </script>
+
     <script>
               var player; //will hold YT player ref
     </script>
@@ -72,7 +78,7 @@
       //    We get the latest playlist and global offset data from the server, then start playing at the correct track + time
       function onPlayerReady(event) {
         event.target.mute();
-        getChannelData('TrueLifeTV', (json) => {
+        getChannelData(window['selectedChannel'], (json) => {
           //cue the playlist. This gets the video IDs without costing me an API call to gdata
           event.target.cuePlaylist({list:json.playlistId,
                       listType:'playlist',
