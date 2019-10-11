@@ -12,8 +12,8 @@ const channels = {
         startTime: 0,
         elapsedTime: 0,
         playlistId: '',
-        channelName: 'TrueLife TV - Find Your Purpose',
-        channelOwner: 'Alex Adams',
+        channelName: '',
+        channelOwner: '',
         channelDescription: ''
     }
 }
@@ -66,7 +66,7 @@ module.exports = {
             channelOwner: '',
             channelDescription: ''
         }
-        res.json(channels.req.params.channel)   
+        res.json(channels[req.params.channel])   
        } else {
         res.json(updateElapsedTime(req.params.channel))
        }
