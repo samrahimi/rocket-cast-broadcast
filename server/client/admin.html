@@ -39,11 +39,11 @@
     <script src="video.js"></script>
     <script>
         //select channel with querystring ...admin.html?channel=
-        window['selectedChannel'] = getUrlVars()["channel"] || "TrueLifeTV"
+        selectedChannel = getUrlVars()["channel"] || "TrueLifeTV"
     </script>
     <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
     <div>
-        <b>Current Status for <a target="_blank" id="channelLink" href="https://samrahimi.com/client/video.html?channel=" /></a>:</b><br />
+        <b>Current Status for <a target="_blank" id="channelLink" href="https://samrahimi.com/client/video.html?channel="></a>:</b><br />
         <pre id="channelJson">
             Please wait...
         </pre>
@@ -66,9 +66,9 @@
 
       $(() => {
 
-        getChannelData(window['selectedChannel'], (json) => {$("#channelJson").html(JSON.stringify(json, null, 2))})
+        getChannelData(selectedChannel, (json) => {$("#channelJson").html(JSON.stringify(json, null, 2))})
         $("#updatePlaylist").on("click", () => {
-            setNewPlaylistForChannel($("#newPlaylistId").val(), window['selectedChannel'], 
+            setNewPlaylistForChannel($("#newPlaylistId").val(), selectedChannel, 
             (json) => {
                 $("#channelJson").html(JSON.stringify(json, null, 2))
             });
@@ -76,14 +76,15 @@
 
 
         $("#restartBroadcast").on("click", () => {
-            restartPlaylist(window["selectedChannel"], (json) => {
+            restartPlaylist(selectedChannel, (json) => {
                 $("#channelJson").html(JSON.stringify(json, null, 2))
             })
         })
 
-        $("ch").html(window["selectedChannel"])
-        $("#channelLink").attr("href", $("#channelLink").attr("href")+window["selectedChannel"])
-    })
+        $("ch").html(selectedChannel)
+        $("#channelLink").attr("href", $("#channelLink").attr("href")+selectedChannel)
+        $("#channelLink").html(selectedChannel)
+      })
     </script>
 
 </html>
