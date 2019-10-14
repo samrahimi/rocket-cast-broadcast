@@ -45,6 +45,12 @@
       <div id="loading-overlay"></div>
     </div>
     <script>
+          
+      var startLoad = 0,      //Timestamped when the YouTube player is loaded and the server has given us the playlist id and elapsedTime value
+          endLoad=0,          //Timestamped when the YouTube player has cued the playlist... endLoad - startLoad is the MINIMUM additional offset beyond that calculated by the server
+          playbackStarted=0   //Timestamped when the player starts playing. Used for profiling only - by looking at the difference between this and endLoad in a variety of environments, we can come up with an average additional offset for the sync. 
+
+
       // 2. This code loads the IFrame Player API code asynchronously.
       var tag = document.createElement('script');
 
@@ -79,6 +85,7 @@
       function onPlayerReady(event) {
         event.target.mute();
         getChannelData(window['selectedChannel'], (json) => {
+          startLoad = Date.now()
           //cue the playlist. This gets the video IDs without costing me an API call to gdata
           event.target.cuePlaylist({list:json.playlistId,
                       listType:'playlist',
@@ -101,8 +108,12 @@
 
           var videoIds = player.getPlaylist();
           getPlaylistDetails(videoIds, (details)=> {
+            endLoad = Date.now()
+            //add the player load time to the elapsed time retrieved from the server 
+            var elapsed = channelData.elapsedTime + (endLoad - startLoad); 
+
             //make the calculation of playlist index and start time based on playlist duration and elapsed time
-            [index, offset] = calculateSync(details, parseInt(channelData.elapsedTime / 1000))
+            [index, offset] = calculateSync(details, Math.round(elapsed/1000))
 
             //load the playlist and start playing appropriately. 
             player.setLoop(true)
@@ -122,6 +133,16 @@
         if (event.data == YT.PlayerState.PLAYING && initialLoadComplete) {
           //player.unMute();
           //initialLoadComplete = true;
+          playbackStarted = Date.now()
+
+          //profiling info - todo: store in DB
+          console.log(`startLoad: ${startLoad}
+                       endLoad: ${endLoad}
+                       start/end difference: ${endLoad - startLoad}
+
+                       playbackStarted: ${playbackStarted}
+                       buffering time (playBackStarted - endload): ${playBackStarted - endLoad}`)
+
           $("#loading-overlay").hide()
           $("#controls-overlay").show()
         }

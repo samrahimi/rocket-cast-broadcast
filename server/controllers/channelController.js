@@ -1,6 +1,6 @@
 //Controls a channel - get / set the content being broadcast and other info about the stream (ie. start time)
 const opts = {
-    bufferLengthInSeconds: 1 //average time for clients to load next video in playlist
+    bufferLengthInSeconds: 3 //average time for clients to load next video in playlist
 }
 
 //for now there is only 1 channel
