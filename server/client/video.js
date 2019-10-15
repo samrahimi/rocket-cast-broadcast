@@ -1,5 +1,5 @@
-const serverUrl='http://samrahimi.com' //if running on a different host then the front end, otherwise leave blank
-const defaultChannelUrl='http://samrahimi.com/channel/TrueLifeTV'
+const serverUrl='' //if running on a different host then the front end, otherwise leave blank
+const defaultChannelUrl='/channel/TrueLifeTV'
 
 
 //Get your own key by going to google cloud api console, youtube API v3. The one below works only for truelife sites
