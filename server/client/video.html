@@ -30,7 +30,7 @@
       <!-- Control bar -->
       <div id="controls-overlay">
         <a href="#" id="resync-button">
-          <img src="img/sync-cta.png" style="border:0px" />
+          <ion-icon name="pulse"></ion-icon>
         </a>
       </div>
       <!-- Initial unmute for mobile-->
@@ -50,7 +50,7 @@
           endLoad=0,          //Timestamped when the YouTube player has cued the playlist... endLoad - startLoad is the MINIMUM additional offset beyond that calculated by the server
           playbackStarted=0   //Timestamped when the player starts playing. Used for profiling only - by looking at the difference between this and endLoad in a variety of environments, we can come up with an average additional offset for the sync. 
 
-
+      var hideControlBarTimeout=0  //For hiding the control bar after n seconds
       // 2. This code loads the IFrame Player API code asynchronously.
       var tag = document.createElement('script');
 
@@ -145,12 +145,22 @@
 
           $("#loading-overlay").hide()
           $("#controls-overlay").show()
+
+          hideControlBarAfter(3000) //autohide controls after 3s
         }
       }
       function stopVideo() {
         player.stopVideo();
       }
-
+      function hideControlBarAfter(timeout) {
+        if (hideControlBarTimeout != 0) {
+          clearTimeout(hideControlBarTimeout);
+          hideControlBarTimeout = 0;
+        }
+        hideControlBarTimeout = setTimeout(() => {
+          $("#controls-overlay").hide()
+        }, timeout)
+      }
 
       $(() => {
         /*
@@ -165,8 +175,35 @@
           resync()
           e.preventDefault()
         })
-        //$("#clearcoat").on("click", (e) => {e.preventDefault()})
+
+        // If user mouses in or taps on the clearcoat (div that blocks the default yt behavior)
+        // we show the control bar with sync, mute, etc... and set a timer to hide it after 5s
+        // If they are interacting with the control bar, we reset the hideControlBarAfter to another 5s 
+        // so it doesn't disappear on them
+
+        /*
+        $("#clearcoat, a.control-button").on("mouseover click", (e) => {
+          $("#controls-overlay").show()
+          hideControlBarAfter(5000)
+          e.preventDefault()
+        }) */
+        /*
+        $("#clearcoat").on("mouseout", (e) => {
+          hideControlBarAfter(5000)
+        }); */
+        $("#clearcoat").on("click", (e) => {
+          console.log("clearcoat clicked"); 
+          $("#controls-overlay").show()
+          setTimeout(() => {hideControlBarAfter(5000)}, 0)
+          //hideControlBarAfter(5000)
+          e.preventDefault()
+
+        })
       })
     </script>
+
+    <!-- use the ionic framework icons to match the parent UI, without including the framework -->
+    <script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
+
   </body>
 </html>

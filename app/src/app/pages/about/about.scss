@@ -1,18 +1,19 @@
 .about-header {
   background-color: #222;
-  padding: 16px;
+  padding: 0;
   width: 100%;
   text-align: center;
   border: none;
 }
 
-#wrapper {
-  position: relative;
+.video-wrapper {
+  position: fixed;
   padding: 0 0 56.25% 0;
   height: 0;
   width: 100%;
+  z-index: 2;
 }
-#wrapper iframe {
+.video-wrapper iframe {
   position: absolute;
   top: 0;
   left: 0;
@@ -30,6 +31,10 @@
   border: none;
 }
 
+.about-info {
+  padding-top: 56.25%;
+  z-index: 1; //scroll under the video
+}
 .about-info p {
   color: var(--ion-color-dark);
   text-align: left;
