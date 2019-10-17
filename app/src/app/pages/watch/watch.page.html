@@ -1,0 +1,16 @@
+<ion-header *ngIf="true">
+  <ion-toolbar>
+    <ion-title>{{channel}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <div class="about-header">
+        <div class="video-wrapper">
+              <iframe id="player" [src]="playerIframeUrl" allow="autoplay"></iframe>
+         </div>
+    </div>
+    <div class="about-info" style="z-index:10000">
+        <iframe src="https://open.rocket.chat/channel/sandbox"></iframe>
+    </div>
+</ion-content>  

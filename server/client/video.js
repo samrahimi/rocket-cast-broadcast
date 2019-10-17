@@ -1,5 +1,23 @@
-const serverUrl='' //if running on a different host then the front end, otherwise leave blank
-const defaultChannelUrl='/channel/TrueLifeTV'
+// Read a page's GET URL variables and return them as an associative array.
+const getUrlVars = () =>
+{
+    var vars = [], hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for(var i = 0; i < hashes.length; i++)
+    {
+        hash = hashes[i].split('=');
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+    }
+    return vars;
+}
+
+const serverUrl=getUrlVars()['dev'] == 'false' ? 
+                '' : 
+                'http://samrahimi.com' //if running on a different host then the front end, otherwise leave blank
+const defaultChannelUrl=getUrlVars()['dev'] == 'false' ? 
+                '/channel/TrueLifeTV' : 
+                'http://samrahimi.com/channel/TrueLifeTV'
 
 
 //Get your own key by going to google cloud api console, youtube API v3. The one below works only for truelife sites
@@ -113,17 +131,4 @@ const restartPlaylist= (channelId, callback) => {
     })
 }
 
-             // Read a page's GET URL variables and return them as an associative array.
-             const getUrlVars = () =>
-             {
-                 var vars = [], hash;
-                 var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-                 for(var i = 0; i < hashes.length; i++)
-                 {
-                     hash = hashes[i].split('=');
-                     vars.push(hash[0]);
-                     vars[hash[0]] = hash[1];
-                 }
-                 return vars;
-             }
      

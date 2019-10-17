@@ -32,6 +32,10 @@ const routes: Routes = [
     path: 'tutorial',
     loadChildren: () => import('./pages/tutorial/tutorial.module').then(m => m.TutorialModule),
     canLoad: [CheckTutorial]
+  },
+  { 
+    path: 'watch/:channel', 
+    loadChildren:() => import('./pages/watch/watch.module').then(m => m.WatchPageModule)
   }
 ];
 
