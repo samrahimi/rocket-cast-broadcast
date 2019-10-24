@@ -32,10 +32,15 @@
         <a href="#" id="resync-button">
           <ion-icon name="pulse"></ion-icon>
         </a>
+
+        <a href="#" id="mute-unmute-button">
+          <ion-icon id="mute-unmute-icon" name="volume-off"></ion-icon>
+        </a>
+
       </div>
       <!-- Initial unmute for mobile-->
       <div id="unmute-overlay">
-          <a href="javascript:player.unMute();$('#unmute-overlay').hide()" id="unmute-initial">
+          <a href="javascript:setMuteState(player, false);$('#unmute-overlay').hide()" id="unmute-initial">
               <img src="img/unmute-cta.png" style="border:0px" />
           </a>
       </div>
@@ -48,8 +53,9 @@
           
       var startLoad = 0,      //Timestamped when the YouTube player is loaded and the server has given us the playlist id and elapsedTime value
           endLoad=0,          //Timestamped when the YouTube player has cued the playlist... endLoad - startLoad is the MINIMUM additional offset beyond that calculated by the server
-          playbackStarted=0   //Timestamped when the player starts playing. Used for profiling only - by looking at the difference between this and endLoad in a variety of environments, we can come up with an average additional offset for the sync. 
-
+          playbackStarted=0,  //Timestamped when the player starts playing. Used for profiling only - by looking at the difference between this and endLoad in a variety of environments, we can come up with an average additional offset for the sync. 
+          playerState=0,      //Timestamped when the player
+          isMuted = false
       var hideControlBarTimeout=0  //For hiding the control bar after n seconds
       // 2. This code loads the IFrame Player API code asynchronously.
       var tag = document.createElement('script');
@@ -80,10 +86,32 @@
         });
       }
 
+      function updateMuteUI(isMuted) {
+        if (isMuted) 
+          $("#mute-unmute-icon").attr("name", "volume-high")
+        else
+          $("#mute-unmute-icon").attr("name", "volume-off")
+      }
+
+      //mute or unmute the video player
+      //and update window.isMuted
+      //then toggle the mute icon
+      //works with any player object that has mute() and unmute() methods
+      function setMuteState(playerObj, muteState) {
+        
+        window.isMuted = muteState
+        window.isMuted ? playerObj.mute() : playerObj.unmute()
+        updateMuteUI(isMuted)
+      }
+
+      function toggleMuteState(playerObj) {
+        setMuteState(playerObj, !window.isMuted)
+      }
+
       // 4. The API will call this function when the video player is ready.
       //    We get the latest playlist and global offset data from the server, then start playing at the correct track + time
       function onPlayerReady(event) {
-        event.target.mute();
+        setMuteState(event.target, true)
         getChannelData(window['selectedChannel'], (json) => {
           startLoad = Date.now()
           //cue the playlist. This gets the video IDs without costing me an API call to gdata
@@ -174,6 +202,10 @@
         $("#resync-button").on("click", (e) => {
           resync()
           e.preventDefault()
+        })
+
+        $("#mute-unmute-button").on("click", () => {
+          toggleMuteState(player)
         })
 
         // If user mouses in or taps on the clearcoat (div that blocks the default yt behavior)
