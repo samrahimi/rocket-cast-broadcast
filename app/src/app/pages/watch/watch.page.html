@@ -7,10 +7,10 @@
 <ion-content>
     <div class="about-header">
         <div class="video-wrapper">
-              <iframe id="player" [src]="playerIframeUrl" allow="autoplay"></iframe>
+              <iframe id="player" [src]="playerFrameUrl" allow="autoplay"></iframe>
          </div>
     </div>
     <div class="about-info" style="z-index:10000">
-        <iframe src="https://open.rocket.chat/channel/sandbox"></iframe>
+        <iframe [src]="chatFrameUrl"></iframe>
     </div>
 </ion-content>  

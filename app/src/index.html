@@ -32,6 +32,12 @@
   <!-- <script async="" defer="" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB8pf6ZdFQj5qw7rc_HSGrhUwQKfIe9ICw"></script> -->
 
   <noscript>Please enable JavaScript to continue using this application.</noscript>
+  <script>
+  window.addEventListener('message', function(e) {
+      console.log(e.data.eventName); // event name
+      console.log(e.data.data); // event data
+  });
+  </script>
 </body>
 
 </html>
