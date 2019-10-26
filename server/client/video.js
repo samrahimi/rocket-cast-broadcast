@@ -105,6 +105,20 @@ const parseYoutubeTimestamp = (duration) => {
     return duration
 }
 
+//the above, in reverse. Seconds to hh:mm:ss string
+const toHHMMSS = (secs) => {
+    var sec_num = parseInt(secs, 10)
+    var hours   = Math.floor(sec_num / 3600)
+    var minutes = Math.floor(sec_num / 60) % 60
+    var seconds = sec_num % 60
+
+    return [hours,minutes,seconds]
+        .map(v => v < 10 ? "0" + v : v)
+        .filter((v,i) => v !== "00" || i > 0)
+        .join(":")
+}
+
+
 const calculateSync = (items, totalElapsedTime) => {
     totalPlaylistDuration = items.map(item => item.durationInSeconds).reduce((a,b) => a+b, 0)
     var currentElapsedTime = parseInt(totalElapsedTime) % parseInt(totalPlaylistDuration)

@@ -29,23 +29,28 @@
            prevents the YouTube info UI from being shown or interacted with -->
       <div id="clearcoat"></div> 
       <!-- Control bar -->
-      <div id="controls-overlay">
+      <div id="controls-overlay" class="autohide">
         <div class="control-buttons">
         <a href="#" id="resync-button"><ion-icon name="pulse"></ion-icon></a>
         <a href="#" id="mute-unmute-button"><ion-icon id="mute-unmute-icon" name="volume-off"></ion-icon></a>
         </div>
 
         <div class="progress">
-          <span class="progress-elapsed-time">5:55</span> / <span class="progress-total-time">29:36</span>
+          <span class="progress-elapsed-time">0:00</span> / <span class="progress-total-time">0:00</span>
         </div>
-        <div class="whatevs"><img src="img/logo-small.png" style="width:100px"></div>
+        <div class="whatevs"><a class="youtube-link" target="_blank"><img src="img/logo-small.png" style="width:90px; border:0"></a></div>
       </div>
+      
       <!-- Initial unmute for mobile-->
       <div id="unmute-overlay">
           <a href="javascript:setMuteState(player, false);$('#unmute-overlay').hide()" id="unmute-initial">
               <img src="img/unmute-cta.png" style="border:0px" />
           </a>
       </div>
+
+      <div id="title-overlay" class="autohide">Now Playing: 
+        <a class="youtube-link youtube-title" href="#" target="_blank">
+      </a></div>
 
       <!-- Container for UI to show while waiting for player to load.
            This would be a good place to stick a box ad -->

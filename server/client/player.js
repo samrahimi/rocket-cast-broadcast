@@ -1,9 +1,12 @@
+// 1. Define some variables. Wish this was Angular!
 var startLoad = 0,      //Timestamped when the YouTube player is loaded and the server has given us the playlist id and elapsedTime value
     endLoad=0,          //Timestamped when the YouTube player has cued the playlist... endLoad - startLoad is the MINIMUM additional offset beyond that calculated by the server
     playbackStarted=0,  //Timestamped when the player starts playing. Used for profiling only - by looking at the difference between this and endLoad in a variety of environments, we can come up with an average additional offset for the sync. 
     playerState=0,      //Timestamped when the player
     isMuted = false
 var hideControlBarTimeout=0  //For hiding the control bar after n seconds
+var playerStateTimeout=0     //For polling current video time, duration, title, etc
+
 // 2. This code loads the IFrame Player API code asynchronously.
 var tag = document.createElement('script');
 
@@ -32,6 +35,40 @@ function onYouTubeIframeAPIReady() {
     }
   });
 }
+
+function updatePlayerState() {
+    var state= {
+        currentTime: player.getCurrentTime(),
+        duration: player.getDuration(),
+        videoUrl: player.getVideoUrl(),
+        //playlistUrl: player.getPlaylistUrl(),
+        playerState: player.getPlayerState(),
+        title: player.getVideoData().title 
+    }
+
+    
+    if (state.duration && state.duration != 0) {
+        $(".progress-elapsed-time").html(toHHMMSS(state.currentTime))
+        $(".progress-total-time").html(toHHMMSS(state.duration))
+    } else {
+        $(".progress-elapsed-time").html('')
+        $(".progress-total-time").html('')
+    }
+
+    if (state.videoUrl) {
+        $(".youtube-link").attr("href", state.videoUrl)
+        $(".youtube-title").html(state.title)
+    }
+}
+
+function pollPlayerState(timeout) {
+    if(playerStateTimeout != 0) {
+        clearInterval(playerStateTimeout);
+        playerStateTimeout = 0;
+      }
+      playerStateTimeout = setInterval(updatePlayerState, timeout)
+}
+
 
 function updateMuteUI(isMuted) {
   if (isMuted) 
@@ -122,6 +159,7 @@ function onPlayerStateChange(event) {
     $("#controls-overlay").css("display", "flex")
 
     hideControlBarAfter(3000) //autohide controls after 3s
+    pollPlayerState(1000) //check every 1s and update the progress bar in the UI
   }
 }
 function stopVideo() {
@@ -134,6 +172,7 @@ function hideControlBarAfter(timeout) {
   }
   hideControlBarTimeout = setTimeout(() => {
     $("#controls-overlay").css("display", "none")
+    $("#title-overlay").css("display", "none")
   }, timeout)
 }
 
@@ -173,6 +212,8 @@ $(() => {
   $("#clearcoat").on("click", (e) => {
     console.log("clearcoat clicked"); 
     $("#controls-overlay").css("display", "flex")
+    $("#title-overlay").css("display", "block")
+
     setTimeout(() => {hideControlBarAfter(5000)}, 0)
     //hideControlBarAfter(5000)
     e.preventDefault()
