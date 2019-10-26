@@ -12,10 +12,26 @@ const getUrlVars = () =>
     return vars;
 }
 
-const serverUrl=getUrlVars()['dev'] == 'false' ? 
+//Utility method to retrieve querystring values and handle undefined keys
+//If the key is present in the querystring, this returns its value
+//If not present, we return the empty string, ''
+const query = (key) => {
+    return (typeof getUrlVars()[key] !== 'undefined' ? getUrlVars()[key]
+            : '')
+}
+
+//True if dev=true set in the querystring
+//Ideally, the parent app that's embedding video.html 
+//will know what environment it's running in, and  server URLs differ between dev and production environments
+const isDev = () => {
+    return query('dev') == 'true'
+}
+
+//For MVP, the player front end and
+const serverUrl= !isDev() ? 
                 '' : 
                 'http://samrahimi.com' //if running on a different host then the front end, otherwise leave blank
-const defaultChannelUrl=getUrlVars()['dev'] == 'false' ? 
+const defaultChannelUrl= !isDev() ? 
                 '/channel/TrueLifeTV' : 
                 'http://samrahimi.com/channel/TrueLifeTV'
 
