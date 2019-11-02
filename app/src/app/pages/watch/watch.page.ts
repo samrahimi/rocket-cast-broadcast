@@ -10,8 +10,8 @@ import { environment } from '../../../environments/environment';
 })
 export class WatchPage implements OnInit {
   channel = ''
-  playerIframeUrl
-
+  playerFrameUrl
+  chatFrameUrl
 
   constructor(
     private route: ActivatedRoute,
@@ -20,7 +20,8 @@ export class WatchPage implements OnInit {
   
   ngOnInit() {
     this.channel = this.route.snapshot.paramMap.get('channel');
-    this.playerIframeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(environment.playerUrl + '&channel='+this.channel)
+    this.playerFrameUrl = this.sanitizer.bypassSecurityTrustResourceUrl(environment.playerUrl + '&channel='+this.channel)
+    this.chatFrameUrl = this.sanitizer.bypassSecurityTrustResourceUrl(environment.chatUrl + '/channel/'+this.channel.toLowerCase()) 
   }
   
 }

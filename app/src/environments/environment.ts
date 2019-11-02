@@ -4,7 +4,8 @@
 // The list of which env maps to which file can be found in `.angular-cli.json`.
 export const environment = {
   production: false,
-  playerUrl: 'http://192.168.0.10:8080/video.html?dev=true',
+  playerUrl: 'http://localhost:8080/video.html?dev=true',
+  chatUrl: 'http://chat.socvid.net:3000'
   // playerUrl: http://samrahimi.com/client/video.html?dev=false
 };
 

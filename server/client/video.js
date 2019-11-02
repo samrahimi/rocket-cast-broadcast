@@ -155,7 +155,7 @@ const restartPlaylist= (channelId, callback) => {
     var url = channelId ? `${serverUrl}/channel/${channelId}/restart` : defaultChannelUrl+"/restart"
     $.get(url, (json) => {
         channelData = json;
-        console.log("Broadcast restarted. New channel data: "+JSON.stringify(channelData, null, 2));
+        //console.log("Broadcast restarted. New channel data: "+JSON.stringify(channelData, null, 2));
         
         callback(channelData)
     })
