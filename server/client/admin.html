@@ -9,6 +9,7 @@
         body {
           margin: 10;
           padding: 0;
+          font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif
         }
         #wrapper {
             position: relative;
@@ -33,42 +34,91 @@
           padding: 10px;
           display: block;
         }
+        .off-air b {
+          color: #888888 !important;
+        }
+        .on-air b {
+          color: #cc0000 !important;
+        }
+        .help-text {
+          font-size: 9px;
+          color: #888888; 
+        }
       </style>
   </head>
   <body>
+  
     <script src="video.js"></script>
     <script>
         //select channel with querystring ...admin.html?channel=
         selectedChannel = getUrlVars()["channel"] || "TrueLifeTV"
     </script>
     <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
-    <div>
-        <b>Current Status for <a target="_blank" id="channelLink" href="https://samrahimi.com/client/video.html?channel="></a>:</b><br />
-        <pre id="channelJson">
-            Please wait...
-        </pre>
-    </div>
-    <br /><br />
 
-    <div>
-        <b>Update Playlist For <ch>TrueLifeTV</ch>:</b> <br />
-        <input id="newPlaylistId" type="text" placeholder="YouTube Playlist ID" /> 
-        <button id="updatePlaylist">Save</button>
-    </div>
-    <br /><br />
-    <div>
-            <b>Restart Broadcast For <ch>TrueLifeTV</ch>:</b> <br />
-            <button id="restartBroadcast">Restart</button>
-    </div>
+    <div class="channel-status">
+        <h3 class="no-embed">#<ch>MyLostHamsterTV</ch> - Current Status:</h3>
+        <h3 class="embed">CURRENT STATUS:</h3>
     
+        <div class="off-air">
+          <b>OFF AIR</b>
+          <div class="help-text">
+            To go on air and start streaming, select a public Playlist or Mix on <a target="_blank" href="https://youtube.com">YouTube</a>, then paste the link below. 
+          </div>
+        </div> 
+        <div class="on-air">
+          <b>ON AIR</b>
+          <div class="help-text">
+            Streaming active for #<ch>MyLostHamsterTV</ch>. <a class="content-source-link">View or edit playlist</a>
+          </div>  
+        </div>  
+
+
+        <h3>BROADCAST SETTINGS:</h3>
+        <input id="newPlaylistId" type="text" placeholder="YouTube Playlist or Mix" /> 
+        <button id="updatePlaylist">Broadcast Now</button>
+        <div class="help-text">
+          Broadcasts the entire playlist to your channel, starting from the beginning.   
+        </div>
+
+        <div style="display:flex; flex-direction:row; align-items: stretch; width:100%">
+            <button flex-grow="1" id="restartBroadcast">Restart</button>
+            <button flex-grow="1" id="resyncPlaylist">Resync</button>
+            <button flex-grow="1" id="stopBroadcast">Stop</button>
+          </div>
+          <div class="help-text">
+              Restart skips to the beginning of the current playlist. Resync updates the playlist with changes that 
+              have been made since the broadcast started. Stop unloads the current playlist, and resets the video player 
+              to its initial state.     
+          </div>
+
+    </div>
+
+    <div class="no-embed debug">
+      <pre id="channelJson"></pre>
+    </div>
+
     <script>
-   
-
       $(() => {
+        if (getUrlVars()["layout"]=="embedded") {
+          $("#embed").show()
+          $("#no-embed").hide()
+        } else {
+          $("#embed").hide()
+          $("#no-embed").show()
+        }
+        
+        getChannelData(selectedChannel, (json) => {
+          $("#channelJson").html(JSON.stringify(json, null, 2))
+        })
 
-        getChannelData(selectedChannel, (json) => {$("#channelJson").html(JSON.stringify(json, null, 2))})
         $("#updatePlaylist").on("click", () => {
-            setNewPlaylistForChannel($("#newPlaylistId").val(), selectedChannel, 
+            let listId = getUrlVars($("#newPlaylistId").val())["list"]
+            if (typeof listId === 'undefined') {
+                console.log("Error: not a valid playlist URL")
+                return
+            }
+            listId = listId.replace('#', '') //kill any trailing hashes
+            setNewPlaylistForChannel(listId, selectedChannel, 
             (json) => {
                 $("#channelJson").html(JSON.stringify(json, null, 2))
             });

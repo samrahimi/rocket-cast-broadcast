@@ -99,12 +99,19 @@ function onPlayerReady(event) {
   getChannelData(window['selectedChannel'], (json) => {
     startLoad = Date.now()
     //cue the playlist. This gets the video IDs without costing me an API call to gdata
-    event.target.cuePlaylist({list:json.playlistId,
+    var pl =  {
+                list:json.playlistId,
                 listType:'playlist',
                 //index:0,
                 //startSeconds:parseInt(json.elapsedTime/1000),
                 //suggestedQuality:'medium'
-              })
+              }
+    if (query("4K") == "true") {
+      pl['suggestedQuality'] = 'highres'
+    }
+
+    
+    event.target.cuePlaylist(pl)
   })
 }
 

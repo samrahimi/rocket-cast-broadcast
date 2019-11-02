@@ -1,8 +1,12 @@
 // Read a page's GET URL variables and return them as an associative array.
-const getUrlVars = () =>
+// By default, window.location.href is considered the current URL
+// You can override by passing any URL string
+const getUrlVars = (urlToParse) =>
 {
     var vars = [], hash;
-    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    var url = typeof urlToParse !== 'undefined' ? urlToParse : window.location.href
+
+    var hashes = url.slice(url.indexOf('?') + 1).split('&');
     for(var i = 0; i < hashes.length; i++)
     {
         hash = hashes[i].split('=');
