@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
   <head>
+
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
       <script
       src="https://code.jquery.com/jquery-3.4.1.min.js"
       integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
@@ -41,7 +44,7 @@
           color: #cc0000 !important;
         }
         .help-text {
-          font-size: 9px;
+          font-size: smaller;
           color: #888888; 
         }
       </style>
@@ -100,11 +103,11 @@
     <script>
       $(() => {
         if (getUrlVars()["layout"]=="embedded") {
-          $("#embed").show()
-          $("#no-embed").hide()
+          $(".embed").show()
+          $(".no-embed").hide()
         } else {
-          $("#embed").hide()
-          $("#no-embed").show()
+          $(".embed").hide()
+          $(".no-embed").show()
         }
         
         getChannelData(selectedChannel, (json) => {
