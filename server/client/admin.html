@@ -47,6 +47,10 @@
           font-size: smaller;
           color: #888888; 
         }
+
+        .broadcast-controls button{
+          width: 30%;
+        }
       </style>
   </head>
   <body>
@@ -59,39 +63,41 @@
     <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
 
     <div class="channel-status">
-        <h3 class="no-embed">#<ch>MyLostHamsterTV</ch> - Current Status:</h3>
-        <h3 class="embed">CURRENT STATUS:</h3>
+        <h3 class="embed">Broadcast Studio: #<ch>MyLostHamsterTV</ch></h3>
+        <h4 class="embed">
+          <span class="off-air">OFF AIR</span>
+          <span class="on-air">ON AIR</span>
+        </h4>
     
-        <div class="off-air">
-          <b>OFF AIR</b>
-          <div class="help-text">
-            To go on air and start streaming, select a public Playlist or Mix on <a target="_blank" href="https://youtube.com">YouTube</a>, then paste the link below. 
+          <div class="help-text off-air">
+            Using iBroadcast technology, you can now stream any <a target="_blank" href="https://youtube.com">YouTube</a> playlist 
+            to your viewers, whether they are chatting on your SocVid.tv channel page, or watching your broadcast on 
+            another website that embeds the SocVid player. 
           </div>
-        </div> 
-        <div class="on-air">
-          <b>ON AIR</b>
-          <div class="help-text">
-            Streaming active for #<ch>MyLostHamsterTV</ch>. <a class="content-source-link">View or edit playlist</a>
-          </div>  
+        <div class="help-text on-air">
+            Streaming is active for #<ch>MyLostHamsterTV</ch>. <a class="content-source-link">View or edit playlist</a>
         </div>  
 
 
-        <h3>BROADCAST SETTINGS:</h3>
+        <h3>CHOOSE CONTENT</h3>
         <input id="newPlaylistId" type="text" placeholder="YouTube Playlist or Mix" /> 
-        <button id="updatePlaylist">Broadcast Now</button>
+        <button id="updatePlaylist">Start Broadcasting</button>
         <div class="help-text">
           Broadcasts the entire playlist to your channel, starting from the beginning.   
         </div>
 
-        <div style="display:flex; flex-direction:row; align-items: stretch; width:100%">
-            <button flex-grow="1" id="restartBroadcast">Restart</button>
-            <button flex-grow="1" id="resyncPlaylist">Resync</button>
-            <button flex-grow="1" id="stopBroadcast">Stop</button>
+          <div class="broadcast-controls" style="width:100%">
+            <h3>BROADCAST CONTROL</h3>
+
+            <button id="restartBroadcast">Restart</button>
+            <button id="resyncPlaylist">Resync *</button>
+            <button id="stopBroadcast">Stop</button>
           </div>
           <div class="help-text">
-              Restart skips to the beginning of the current playlist. Resync updates the playlist with changes that 
-              have been made since the broadcast started. Stop unloads the current playlist, and resets the video player 
-              to its initial state.     
+              * Resync: downloads the most recent version of current playlist from YouTube, then 
+                starts streaming from the beginning of the updated playlist. Use this feature if 
+                you make changes to a playlist that's currently being streamed, and want to see 
+                those changes reflected in your SocVid stream.
           </div>
 
     </div>
@@ -101,6 +107,17 @@
     </div>
 
     <script>
+      setOnAir=() => {
+        $(".on-air").show()
+        $(".off-air").hide()
+      }
+      setOffAir=() => {
+        $(".on-air").hide()
+        $(".off-air").show()
+      }
+      isOnAir = () => {
+        return (typeof channelJson.playlist !== 'undefined' && channelJson.playlist.length > 0)
+      }
       $(() => {
         if (getUrlVars()["layout"]=="embedded") {
           $(".embed").show()
@@ -111,6 +128,7 @@
         }
         
         getChannelData(selectedChannel, (json) => {
+          window.channelJson = json
           $("#channelJson").html(JSON.stringify(json, null, 2))
         })
 
@@ -123,6 +141,7 @@
             listId = listId.replace('#', '') //kill any trailing hashes
             setNewPlaylistForChannel(listId, selectedChannel, 
             (json) => {
+                window.channelJson = json
                 $("#channelJson").html(JSON.stringify(json, null, 2))
             });
         })
@@ -130,6 +149,7 @@
 
         $("#restartBroadcast").on("click", () => {
             restartPlaylist(selectedChannel, (json) => {
+                window.channelJson = json
                 $("#channelJson").html(JSON.stringify(json, null, 2))
             })
         })
