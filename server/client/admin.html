@@ -53,6 +53,201 @@
         }
 
 
+        .rc-button {
+
+position: relative;
+
+display: -webkit-box;
+
+display: -ms-flexbox;
+
+display: flex;
+
+height: 40px;
+
+min-height: 40px;
+
+padding: 0 1.5rem;
+
+cursor: pointer;
+-webkit-transition: opacity 0.3s, background-color 0.3s, color 0.3s;
+transition: opacity 0.3s, background-color 0.3s, color 0.3s;
+text-align: center;
+
+color: #000000;
+
+border-width: 2px;
+
+border-width: var(--button-border-width);
+border-style: solid;
+border-color: #000000;
+
+border-radius: 2px;
+
+border-radius: var(--button-border-radius);
+background-color: transparent;
+
+font-size: 0.875rem;
+
+font-size: var(--button-text-size);
+font-weight: 600;
+
+-webkit-box-align: center;
+
+    -ms-flex-align: center;
+
+        align-items: center;
+-webkit-box-pack: center;
+    -ms-flex-pack: center;
+        justify-content: center;
+}
+.rc-button:not([disabled]):hover {
+  opacity: 0.6;
+}
+.rc-button--icon > svg {
+  margin: 0 5px 0 -5px;
+
+  font-size: 20px;
+  fill: currentColor;
+}
+.rtl .rc-button--icon > svg {
+    margin: 0 -5px 0 5px;
+  }
+.rc-button:active,
+.rc-button:focus:hover {
+  outline: none;
+}
+.rc-button:active {
+  -webkit-transform: translateY(2px);
+          transform: translateY(2px);
+
+  opacity: 0.9;
+}
+.rc-button:active::before {
+  top: -2px;
+}
+.rc-button::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+  content: "";
+  cursor: pointer;
+}
+.rc-button:disabled {
+  cursor: default;
+
+  color: #ffffff;
+
+  color: var(--button-disabled-text-color);
+  border: 0;
+  border-color: #e1e5e8;
+  border-color: var(--button-disabled-background);
+  background-color: #e1e5e8;
+  background-color: var(--button-disabled-background);
+}
+.rc-button--invisible {
+  visibility: hidden;
+}
+.rc-button--primary {
+  color: #ffffff;
+  color: var(--button-primary-text-color);
+  border: 0;
+  background-color: #1d74f5;
+  background-color: var(--button-primary-background);
+}
+.rc-button--nude {
+  border: none;
+  background-color: inherit;
+
+  font-weight: 400;
+}
+.rc-button--primary.rc-button--nude {
+  color: #1d74f5;
+  color: var(--button-primary-background);
+}
+.rc-button--primary.rc-button--outline {
+  color: #1d74f5;
+  color: var(--button-primary-background);
+  border-color: #1d74f5;
+  border-color: var(--button-primary-background);
+}
+.rc-button--secondary {
+  color: #414852;
+  color: var(--button-secondary-text-color);
+  border: 0;
+  border-color: #cbced1;
+  border-color: var(--button-secondary-background);
+  background-color: #cbced1;
+  background-color: var(--button-secondary-background);
+}
+.rc-button--secondary.rc-button--outline {
+  color: #cbced1;
+  color: var(--button-secondary-background);
+  border-color: #cbced1;
+  border-color: var(--button-secondary-background);
+}
+.rc-button--cancel {
+  color: #ffffff;
+  color: var(--button-primary-text-color);
+  border: 0;
+  border-color: #f5455c;
+  border-color: var(--button-cancel-color);
+  background-color: #f5455c;
+  background-color: var(--button-cancel-color);
+}
+.rc-button--cancel.rc-button--outline {
+  color: #f5455c;
+  color: var(--button-cancel-color);
+  border-color: #f5455c;
+  border-color: var(--button-cancel-color);
+}
+.rc-button--small {
+  height: 28px;
+  height: var(--button-height-small);
+  min-height: 28px;
+  min-height: var(--button-height-small);
+  padding: 0 0.5rem;
+  padding: var(--button-padding-small);
+
+  font-size: 13px;
+
+  font-size: var(--button-text-size-small);
+}
+.rc-button--square {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-flex: 0;
+      -ms-flex: 0 0 36px;
+          flex: 0 0 36px;
+  -ms-flex: 0 0 var(--button-square-size);
+      flex: 0 0 var(--button-square-size);
+
+  margin: 0;
+  padding: 0;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+.rc-button--outline {
+  border-width: 2px;
+  border-style: solid;
+  background: transparent;
+}
+.rc-button--stack {
+  width: 100%;
+}
+.rc-button--no-padding {
+  padding-right: 0;
+  padding-left: 0;
+}
+
       </style>
   </head>
   <body>
@@ -107,21 +302,42 @@
     </div>
 
     <script>
+      const setOnAir=() => {
+        $(".on-air").show()
+        $(".off-air").hide()
+      }
+      const setOffAir=() => {
+        $(".on-air").hide()
+        $(".off-air").show()
+      }
+      const isOnAir = () => {
+        return (typeof channelJson.playlist !== 'undefined' && channelJson.playlist.length > 0)
+      }
+      const updateBroadcastStatus = () => {
+        if (isOnAir()) {
+          setOnAir()
+        } else {
+          setOffAir()
+        }
+
+        $("input, button").removeAttr("disabled")
+      }
+      const disableAfterSubmit=() => {
+        $("input, button").attr("disabled", "disabled")
+      }
       
       $(() => {
-        /*
-        if (getUrlVars()["layout"]=="embedded") {
+        if (query["layout"]=="embedded") {
           $(".embed").show()
           $(".no-embed").hide()
         } else {
           $(".embed").hide()
           $(".no-embed").show()
-        }*/
+        }
         
         getChannelData(selectedChannel, (json) => {
           window.channelJson = json
           updateBroadcastStatus()
-
           $("#channelJson").html(JSON.stringify(json, null, 2))
         })
 
@@ -159,5 +375,5 @@
         $("#channelLink").html(selectedChannel)
       })
     </script>
-</body>
+
 </html>
