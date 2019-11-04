@@ -37,10 +37,10 @@
           padding: 10px;
           display: block;
         }
-        .off-air b {
+        .off-air span {
           color: #888888 !important;
         }
-        .on-air b {
+        .on-air span {
           color: #cc0000 !important;
         }
         .help-text {
@@ -52,7 +52,15 @@
           width: 30%;
         }
 
-
+        .results {
+          display:none;
+        }
+        .results.success {
+          color: Blue;
+        }
+        .results.error {
+          color: Red;
+        } 
       </style>
   </head>
   <body>
@@ -65,9 +73,10 @@
     <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
 
     <div class="channel-status">
+        <b class="results"></b>
         <h3 class="embed">Broadcast Studio - #<ch>MyLostHamsterTV</ch><br />
           <span class="off-air">OFF AIR</span>
-          <span class="on-air">ON AIR</span> 
+          <span class="on-air">&#9679; ON AIR</span> 
         </h3>
   
         <div class="help-text off-air">
@@ -82,17 +91,19 @@
 
           <h3>Content To Broadcast</h3>
           <input id="newPlaylistId" type="text" placeholder="Link to a YouTube Playlist" /> 
-          <button class="rc-button rc-button--primary"id="updatePlaylist">Stream Now</button>
+          <button class="rc-button rc-button--primary" id="updatePlaylist">Stream Now</button><br />
+
           <div class="help-text">
             Loads a playlist and starts streaming its contents from the beginning.  
           </div>
 
-          <div class="broadcast-controls" style="width:100%">
+          <div class="broadcast-controls on-air" style="width:100%">
             <h3>Control My Broadcast</h3>
 
             <button class="rc-button rc-button--secondary" id="restartBroadcast">Restart</button>
             <button class="rc-button rc-button--secondary" id="resyncBroadcast">Resync *</button>
-            <button class="rc-button rc-button--primary" id="stopBroadcast">Stop</button>
+            <button class="rc-button rc-button--primary" id="stopBroadcast">Stop</button><br />
+
 
             <div class="help-text">
               * Resync: updates your SocVid playlist if it has been modified on YouTube YouTube, then 
@@ -128,6 +139,8 @@
         $("input, button").removeAttr("disabled")
       }
       const disableAfterSubmit=() => {
+        $(".results").removeClass("success").removeClass("error").html("").hide()
+        $("input").val("")
         $("input, button").attr("disabled", "disabled")
       }
       
@@ -154,6 +167,8 @@
             let listId = getUrlVars($("#newPlaylistId").val())["list"]
             if (typeof listId === 'undefined' || listId.length == 0) {
                 console.log("Invalid Playlist Url: "+$("#newPlaylistId").val())
+                $(".results").addClass("error").html("ERROR").show()
+
                 updateBroadcastStatus()
                 return
             }
@@ -162,6 +177,8 @@
             (json) => {
                 window.channelJson = json
                 $("#channelJson").html(JSON.stringify(json, null, 2))
+                $(".results").addClass("success").html("Playlist Updated! Now streaming...").show()
+
                 updateBroadcastStatus()
             });
         })
