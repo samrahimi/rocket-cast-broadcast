@@ -51,6 +51,203 @@
         .broadcast-controls button{
           width: 30%;
         }
+
+
+        .rc-button {
+
+position: relative;
+
+display: -webkit-box;
+
+display: -ms-flexbox;
+
+display: flex;
+
+height: 40px;
+
+min-height: 40px;
+
+padding: 0 1.5rem;
+
+cursor: pointer;
+-webkit-transition: opacity 0.3s, background-color 0.3s, color 0.3s;
+transition: opacity 0.3s, background-color 0.3s, color 0.3s;
+text-align: center;
+
+color: #000000;
+
+border-width: 2px;
+
+border-width: var(--button-border-width);
+border-style: solid;
+border-color: #000000;
+
+border-radius: 2px;
+
+border-radius: var(--button-border-radius);
+background-color: transparent;
+
+font-size: 0.875rem;
+
+font-size: var(--button-text-size);
+font-weight: 600;
+
+-webkit-box-align: center;
+
+    -ms-flex-align: center;
+
+        align-items: center;
+-webkit-box-pack: center;
+    -ms-flex-pack: center;
+        justify-content: center;
+}
+.rc-button:not([disabled]):hover {
+  opacity: 0.6;
+}
+.rc-button--icon > svg {
+  margin: 0 5px 0 -5px;
+
+  font-size: 20px;
+  fill: currentColor;
+}
+.rtl .rc-button--icon > svg {
+    margin: 0 -5px 0 5px;
+  }
+.rc-button:active,
+.rc-button:focus:hover {
+  outline: none;
+}
+.rc-button:active {
+  -webkit-transform: translateY(2px);
+          transform: translateY(2px);
+
+  opacity: 0.9;
+}
+.rc-button:active::before {
+  top: -2px;
+}
+.rc-button::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+  content: "";
+  cursor: pointer;
+}
+.rc-button:disabled {
+  cursor: default;
+
+  color: #ffffff;
+
+  color: var(--button-disabled-text-color);
+  border: 0;
+  border-color: #e1e5e8;
+  border-color: var(--button-disabled-background);
+  background-color: #e1e5e8;
+  background-color: var(--button-disabled-background);
+}
+.rc-button--invisible {
+  visibility: hidden;
+}
+.rc-button--primary {
+  color: #ffffff;
+  color: var(--button-primary-text-color);
+  border: 0;
+  background-color: #1d74f5;
+  background-color: var(--button-primary-background);
+}
+.rc-button--nude {
+  border: none;
+  background-color: inherit;
+
+  font-weight: 400;
+}
+.rc-button--primary.rc-button--nude {
+  color: #1d74f5;
+  color: var(--button-primary-background);
+}
+.rc-button--primary.rc-button--outline {
+  color: #1d74f5;
+  color: var(--button-primary-background);
+  border-color: #1d74f5;
+  border-color: var(--button-primary-background);
+}
+.rc-button--secondary {
+  color: #414852;
+  color: var(--button-secondary-text-color);
+  border: 0;
+  border-color: #cbced1;
+  border-color: var(--button-secondary-background);
+  background-color: #cbced1;
+  background-color: var(--button-secondary-background);
+}
+.rc-button--secondary.rc-button--outline {
+  color: #cbced1;
+  color: var(--button-secondary-background);
+  border-color: #cbced1;
+  border-color: var(--button-secondary-background);
+}
+.rc-button--cancel {
+  color: #ffffff;
+  color: var(--button-primary-text-color);
+  border: 0;
+  border-color: #f5455c;
+  border-color: var(--button-cancel-color);
+  background-color: #f5455c;
+  background-color: var(--button-cancel-color);
+}
+.rc-button--cancel.rc-button--outline {
+  color: #f5455c;
+  color: var(--button-cancel-color);
+  border-color: #f5455c;
+  border-color: var(--button-cancel-color);
+}
+.rc-button--small {
+  height: 28px;
+  height: var(--button-height-small);
+  min-height: 28px;
+  min-height: var(--button-height-small);
+  padding: 0 0.5rem;
+  padding: var(--button-padding-small);
+
+  font-size: 13px;
+
+  font-size: var(--button-text-size-small);
+}
+.rc-button--square {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-flex: 0;
+      -ms-flex: 0 0 36px;
+          flex: 0 0 36px;
+  -ms-flex: 0 0 var(--button-square-size);
+      flex: 0 0 var(--button-square-size);
+
+  margin: 0;
+  padding: 0;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+.rc-button--outline {
+  border-width: 2px;
+  border-style: solid;
+  background: transparent;
+}
+.rc-button--stack {
+  width: 100%;
+}
+.rc-button--no-padding {
+  padding-right: 0;
+  padding-left: 0;
+}
+
       </style>
   </head>
   <body>
@@ -63,43 +260,41 @@
     <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
 
     <div class="channel-status">
-        <h3 class="embed">Broadcast Studio: #<ch>MyLostHamsterTV</ch></h3>
-        <h4 class="embed">
+        <h3 class="embed">Broadcast Studio - #<ch>MyLostHamsterTV</ch><br />
           <span class="off-air">OFF AIR</span>
-          <span class="on-air">ON AIR</span>
-        </h4>
-    
-          <div class="help-text off-air">
-            Using iBroadcast technology, you can now stream any <a target="_blank" href="https://youtube.com">YouTube</a> playlist 
-            to your viewers, whether they are chatting on your SocVid.tv channel page, or watching your broadcast on 
-            another website that embeds the SocVid player. 
-          </div>
+          <span class="on-air">ON AIR</span> 
+        </h3>
+  
+        <div class="help-text off-air">
+          Choose any <a target="_blank" href="https://youtube.com">YouTube</a> playlist and stream it 
+          to your audience, here on SocVid.tv or by adding the SocVid player to your website. 
+        </div>
+
         <div class="help-text on-air">
-            Streaming is active for #<ch>MyLostHamsterTV</ch>. <a class="content-source-link">View or edit playlist</a>
+            #<ch>MyLostHamsterTV</ch> is now streaming. <a class="content-source-link">View or edit playlist</a>
         </div>  
 
 
-        <h3>CHOOSE CONTENT</h3>
-        <input id="newPlaylistId" type="text" placeholder="YouTube Playlist or Mix" /> 
-        <button id="updatePlaylist">Start Broadcasting</button>
-        <div class="help-text">
-          Broadcasts the entire playlist to your channel, starting from the beginning.   
-        </div>
+          <h3>Content To Broadcast</h3>
+          <input id="newPlaylistId" type="text" placeholder="Link to a YouTube Playlist" /> 
+          <button class="rc-button rc-button--primary"id="updatePlaylist">Stream Now</button>
+          <div class="help-text">
+            Loads a playlist and starts streaming its contents from the beginning.  
+          </div>
 
           <div class="broadcast-controls" style="width:100%">
-            <h3>BROADCAST CONTROL</h3>
+            <h3>Control My Broadcast</h3>
 
-            <button id="restartBroadcast">Restart</button>
-            <button id="resyncPlaylist">Resync *</button>
-            <button id="stopBroadcast">Stop</button>
-          </div>
-          <div class="help-text">
-              * Resync: downloads the most recent version of current playlist from YouTube, then 
-                starts streaming from the beginning of the updated playlist. Use this feature if 
-                you make changes to a playlist that's currently being streamed, and want to see 
-                those changes reflected in your SocVid stream.
-          </div>
+            <button class="rc-button rc-button--secondary" id="restartBroadcast">Restart</button>
+            <button class="rc-button rc-button--secondary" id="resyncBroadcast">Resync *</button>
+            <button class="rc-button rc-button--primary" id="stopBroadcast">Stop</button>
 
+            <div class="help-text">
+              * Resync: updates your SocVid playlist if it has been modified on YouTube YouTube, then 
+                restart streaming from the beginning.
+            </div>
+
+          </div>
     </div>
 
     <div class="no-embed debug">
@@ -107,17 +302,30 @@
     </div>
 
     <script>
-      setOnAir=() => {
+      const setOnAir=() => {
         $(".on-air").show()
         $(".off-air").hide()
       }
-      setOffAir=() => {
+      const setOffAir=() => {
         $(".on-air").hide()
         $(".off-air").show()
       }
-      isOnAir = () => {
+      const isOnAir = () => {
         return (typeof channelJson.playlist !== 'undefined' && channelJson.playlist.length > 0)
       }
+      const updateBroadcastStatus = () => {
+        if (isOnAir()) {
+          setOnAir()
+        } else {
+          setOffAir()
+        }
+
+        $("input, button").removeAttr("disabled")
+      }
+      const disableAfterSubmit=() => {
+        $("input, button").attr("disabled", "disabled")
+      }
+      
       $(() => {
         if (getUrlVars()["layout"]=="embedded") {
           $(".embed").show()
@@ -133,9 +341,12 @@
         })
 
         $("#updatePlaylist").on("click", () => {
+            disableAfterSubmit();
+
             let listId = getUrlVars($("#newPlaylistId").val())["list"]
-            if (typeof listId === 'undefined') {
-                console.log("Error: not a valid playlist URL")
+            if (typeof listId === 'undefined' || listId.length == 0) {
+                console.log("Invalid Playlist Url: "+$("#newPlaylistId").val())
+                updateBroadcastStatus()
                 return
             }
             listId = listId.replace('#', '') //kill any trailing hashes
@@ -143,14 +354,18 @@
             (json) => {
                 window.channelJson = json
                 $("#channelJson").html(JSON.stringify(json, null, 2))
+                updateBroadcastStatus()
             });
         })
 
 
         $("#restartBroadcast").on("click", () => {
+            disableAfterSubmit();
+
             restartPlaylist(selectedChannel, (json) => {
                 window.channelJson = json
                 $("#channelJson").html(JSON.stringify(json, null, 2))
+                updateBroadcastStatus()
             })
         })
 
