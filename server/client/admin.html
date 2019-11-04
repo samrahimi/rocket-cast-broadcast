@@ -37,10 +37,10 @@
           padding: 10px;
           display: block;
         }
-        .off-air span {
+        span.off-air {
           color: #888888 !important;
         }
-        .on-air span {
+        span.on-air {
           color: #cc0000 !important;
         }
         .help-text {
@@ -162,8 +162,6 @@
         })
 
         $("#updatePlaylist").on("click", () => {
-            disableAfterSubmit();
-
             let listId = getUrlVars($("#newPlaylistId").val())["list"]
             if (typeof listId === 'undefined' || listId.length == 0) {
                 console.log("Invalid Playlist Url: "+$("#newPlaylistId").val())
@@ -172,6 +170,9 @@
                 updateBroadcastStatus()
                 return
             }
+
+            disableAfterSubmit();
+
             listId = listId.replace('#', '') //kill any trailing hashes
             setNewPlaylistForChannel(listId, selectedChannel, 
             (json) => {
