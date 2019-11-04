@@ -132,13 +132,15 @@
       }
       
       $(() => {
+
+        /*
         if (query["layout"]=="embedded") {
           $(".embed").show()
           $(".no-embed").hide()
         } else {
           $(".embed").hide()
           $(".no-embed").show()
-        }
+        } */
         
         getChannelData(selectedChannel, (json) => {
           window.channelJson = json
