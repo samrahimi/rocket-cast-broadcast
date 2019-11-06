@@ -41,7 +41,7 @@ const defaultChannelUrl= !isDev() ?
 
 
 //Get your own key by going to google cloud api console, youtube API v3. The one below works only for truelife sites
-const youtubeAPIUrl = 'https://www.googleapis.com/youtube/v3/videos?part=contentDetails&key=AIzaSyDyqJKwMF_vhGqNUmDbbEkvQ55E9ZDhSnc&id='
+//const youtubeAPIUrl = 'https://www.googleapis.com/youtube/v3/videos?part=contentDetails&key=AIzaSyDyqJKwMF_vhGqNUmDbbEkvQ55E9ZDhSnc&id='
 channelData = {};
 playlistDetails=[]
 
@@ -49,16 +49,26 @@ const  getChannelData= (channelId,callback) => {
     var url = channelId ? `${serverUrl}/channel/${channelId}` : defaultChannelUrl
     $.get(url, (json) => {
         channelData = json;
-        console.log("Got channel data: "+JSON.stringify(channelData, null, 2));
+        //console.log("Got channel data: "+JSON.stringify(channelData, null, 2));
         
         callback(channelData)
     })
 }
 
+// returns the playlist details, with duration converted to raw seconds
+const getPlaylistDetails = () => {
+    playlistDetails = channelData.playlistDetails.video.map(item => {
+        item.durationInSeconds = fromHHMMSS(item.duration)
+        return item;
+    })
+    return playlistDetails;
+}
 //Accepts: an array of video ids
 //Returns: a JSON array with the details of each video
 //Purpose: to get necessary details like the length of each video in a playlist
+/*
 const getPlaylistDetails= (videoIds, callback) => {
+
     var ids = videoIds.join(',');
     var url = youtubeAPIUrl+ids
     $.get(url, (json)=> {
@@ -72,7 +82,7 @@ const getPlaylistDetails= (videoIds, callback) => {
         console.log("Got playlist details: "+JSON.stringify(playlistDetails, null, 2))
         callback(playlistDetails)
     })
-}
+}*/
 
 //Accepts: a video duration as returned by the youtube data api
 //Returns: the value in seconds, as an integer (expected by the youtube player api)
@@ -109,6 +119,29 @@ const parseYoutubeTimestamp = (duration) => {
     return duration
 }
 
+//Takes a time value like 3:45:24 and returns the number of seconds
+const fromHHMMSS = (formattedTime) => {
+    let a= formattedTime.split(':')
+
+    duration = 0;
+
+    if (a.length == 3) {
+        duration = duration + parseInt(a[0]) * 3600;
+        duration = duration + parseInt(a[1]) * 60;
+        duration = duration + parseInt(a[2]);
+    }
+
+    if (a.length == 2) {
+        duration = duration + parseInt(a[0]) * 60;
+        duration = duration + parseInt(a[1]);
+    }
+
+    if (a.length == 1) {
+        duration = duration + parseInt(a[0]);
+    }
+    return duration
+
+}
 //the above, in reverse. Seconds to hh:mm:ss string
 const toHHMMSS = (secs) => {
     var sec_num = parseInt(secs, 10)
@@ -125,6 +158,11 @@ const toHHMMSS = (secs) => {
 
 const calculateSync = (items, totalElapsedTime) => {
     totalPlaylistDuration = items.map(item => item.durationInSeconds).reduce((a,b) => a+b, 0)
+    totalPlaylistDuration2 = items.map(item => item.durationInSeconds).reduce((a,b) => a+=b)
+
+    console.log(totalPlaylistDuration)
+    console.log(totalPlaylistDuration2)
+
     var currentElapsedTime = parseInt(totalElapsedTime) % parseInt(totalPlaylistDuration)
 
     //Iterate through the items
@@ -142,7 +180,7 @@ const resync = () => {
     location.reload() //because we're running in an iframe ;)
 }
 const setNewPlaylistForChannel= (playlistId, channelId, callback) => {
-    var url = channelId ? `${serverUrl}/channel/${channelId}` : defaultChannelUrl
+    var url = channelId ? `${serverUrl}/channel/${channelId}/play` : defaultChannelUrl
 
     $.ajax({
         url: url,
@@ -150,7 +188,7 @@ const setNewPlaylistForChannel= (playlistId, channelId, callback) => {
         method: 'POST',
         success: function( result ) {
             channelData = result
-            console.log("Set playlist complete. Updated channel data: "+JSON.stringify(channelData, null, 2));
+            console.log("Got latest playlist from YouTube and attached to channel: "+JSON.stringify(channelData, null, 2));
             callback(channelData)
         }
       });

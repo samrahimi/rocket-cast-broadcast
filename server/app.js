@@ -28,13 +28,25 @@ app.use(express.static(__dirname, { dotfiles: 'allow' } ));
 //REST API routes
 var channelController = require('./controllers/channelController.js')
 
+
+app.route('/proxy/playlist/:playlistId')
+    .get(channelController.youtubePlaylistProxy)
+app.route('/channel')
+    .get(channelController.getAll)
+
 app.route('/channel/:channel')
-    .get(channelController.getStatus)
+    .get(channelController.getChannelState)
+    .post(channelController.createOrUpdateChannel);
+
+
+app.route('/channel/:channel/play')
     .post(channelController.setPlaylist);
 
 app.route('/channel/:channel/restart')
    .get(channelController.restart)
 
+app.route('/channel/:channel/resync')
+    .get(channelController.resync)
 // Starting both http & https servers
 const httpServer = http.createServer(app);
 //const httpsServer = https.createServer(credentials, app);

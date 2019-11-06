@@ -79,42 +79,24 @@
           <span class="on-air">&#9679; ON AIR</span> 
         </h3>
   
-        <div class="help-text off-air">
+        <p class="help-text off-air">
           Choose any <a target="_blank" href="https://youtube.com">YouTube</a> playlist and stream it 
-          to your audience, here on SocVid.tv or by adding the SocVid player to your website. 
+          like it's live. 
+        </p>
+
+        <p class="help-text on-air">
+            #<ch>MyLostHamsterTV</ch> is now streaming. <a href="#" class="content-source-link">View or edit playlist</a>
+        </p>  
+        <div class="playlist-controls">
+          <input id="newPlaylistId" type="text" placeholder="Link to a YouTube Playlist" style="width:70%;padding:5px"/> 
+          <button class="rc-button rc-button--primary" id="updatePlaylist" style="padding:5px;font-weight:bold">Stream Now</button><br />
         </div>
 
-        <div class="help-text on-air">
-            #<ch>MyLostHamsterTV</ch> is now streaming. <a href="#" class="content-source-link">View or edit playlist</a>
-        </div>  
-
-
-          <h3>Content To Broadcast</h3>
-          <input id="newPlaylistId" type="text" placeholder="Link to a YouTube Playlist" /> 
-          <button class="rc-button rc-button--primary" id="updatePlaylist">Stream Now</button><br />
-
-          <div class="help-text">
-            Loads a playlist and starts streaming its contents from the beginning.  
+          <div class="broadcast-controls on-air" style="width:100%; margin-top:5px">
+            <button class="rc-button rc-button--secondary" style="padding:5px;font-weight:bold" id="restartBroadcast">Restart</button>
+            <button disabled="disabled" class="rc-button rc-button--secondary" style="padding:5px;font-weight:bold" id="resyncBroadcast">Resync</button>
+            <button class="rc-button rc-button--primary"  style="padding:5px;font-weight:bold" id="stopBroadcast">Stop</button><br />
           </div>
-
-          <div class="broadcast-controls on-air" style="width:100%">
-            <h3>Control My Broadcast</h3>
-
-            <button class="rc-button rc-button--secondary" id="restartBroadcast">Restart</button>
-            <button class="rc-button rc-button--secondary" id="resyncBroadcast">Resync *</button>
-            <button class="rc-button rc-button--primary" id="stopBroadcast">Stop</button><br />
-
-
-            <div class="help-text">
-              * Resync: updates your SocVid playlist if it has been modified on YouTube YouTube, then 
-                restart streaming from the beginning.
-            </div>
-
-          </div>
-    </div>
-
-    <div class="no-embed debug">
-      <pre id="channelJson"></pre>
     </div>
 
     <script>
@@ -127,7 +109,7 @@
         $(".off-air").show()
       }
       const isOnAir = () => {
-        return (typeof channelJson.playlist !== 'undefined' && channelJson.playlist.length > 0)
+        return (typeof channelJson.playlistId !== 'undefined' && channelJson.playlistId.length > 0)
       }
       const updateBroadcastStatus = () => {
         if (isOnAir()) {
@@ -158,7 +140,7 @@
         getChannelData(selectedChannel, (json) => {
           window.channelJson = json
           updateBroadcastStatus()
-          $("#channelJson").html(JSON.stringify(json, null, 2))
+          //$("#channelJson").html(JSON.stringify(json, null, 2))
         })
 
         $("#updatePlaylist").on("click", () => {
@@ -177,7 +159,7 @@
             setNewPlaylistForChannel(listId, selectedChannel, 
             (json) => {
                 window.channelJson = json
-                $("#channelJson").html(JSON.stringify(json, null, 2))
+                //$("#channelJson").html(JSON.stringify(json, null, 2))
                 $(".results").addClass("success").html("Playlist Updated! Now streaming...").show()
 
                 updateBroadcastStatus()
@@ -190,9 +172,20 @@
 
             restartPlaylist(selectedChannel, (json) => {
                 window.channelJson = json
-                $("#channelJson").html(JSON.stringify(json, null, 2))
+                //$("#channelJson").html(JSON.stringify(json, null, 2))
                 updateBroadcastStatus()
             })
+        })
+
+        $("#stopBroadcast").on("click", () => {
+          setNewPlaylistForChannel('', selectedChannel, 
+            (json) => {
+                window.channelJson = json
+                //$("#channelJson").html(JSON.stringify(json, null, 2))
+                $(".results").addClass("success").html("Streaming Stopped.").show()
+
+                updateBroadcastStatus()
+            });
         })
 
         $("ch").html(selectedChannel)

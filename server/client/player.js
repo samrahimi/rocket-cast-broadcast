@@ -120,35 +120,25 @@ function onPlayerReady(event) {
 var initialLoadComplete = false;
 
 function onPlayerStateChange(event) {
-  //This is called when cuePlaylist is done, and we can get the video ids.
-  //We then get the details of the videos, so we can calculate the start time
+  //This is called when cuePlaylist is done... we get the playlist metadata and calculate the
+  //index and offset to sync into the stream
   if (event.data == 5 && !initialLoadComplete) {
     initialLoadComplete = true;
+    var details = getPlaylistDetails()
+    endLoad = Date.now()
+    //add the player load time to the elapsed time retrieved from the server 
+    var elapsed = channelData.elapsedTime + (endLoad - startLoad); 
 
-    var videoIds = player.getPlaylist();
-    getPlaylistDetails(videoIds, (details)=> {
-      endLoad = Date.now()
-      //add the player load time to the elapsed time retrieved from the server 
-      var elapsed = channelData.elapsedTime + (endLoad - startLoad); 
+    //make the calculation of playlist index and start time based on playlist duration and elapsed time
+    [index, offset] = calculateSync(details, Math.round(elapsed/1000))
 
-      //make the calculation of playlist index and start time based on playlist duration and elapsed time
-      [index, offset] = calculateSync(details, Math.round(elapsed/1000))
-
-      //load the playlist and start playing appropriately. 
-      player.setLoop(true)
-      player.setShuffle(false)
-      player.playVideoAt(index)
-      player.seekTo(offset, true)
-      /*
-      player.loadPlaylist({
-                list:videoIds,
-                listType:'playlist',
-                index:index,
-                startSeconds:offset,
-                //suggestedQuality:'medium'
-              }) */
-    })
+    //load the playlist and start playing appropriately. 
+    player.setLoop(true)
+    player.setShuffle(false)
+    player.playVideoAt(index)
+    player.seekTo(offset, true)
   }
+
   if (event.data == YT.PlayerState.PLAYING && initialLoadComplete) {
     //player.unMute();
     //initialLoadComplete = true;
