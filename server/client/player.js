@@ -110,7 +110,7 @@ function onPlayerReady(event) {
       pl['suggestedQuality'] = 'highres'
     }
 
-    
+    console.log("before cue playlist")
     event.target.cuePlaylist(pl)
   })
 }
@@ -123,6 +123,7 @@ function onPlayerStateChange(event) {
   //This is called when cuePlaylist is done... we get the playlist metadata and calculate the
   //index and offset to sync into the stream
   if (event.data == 5 && !initialLoadComplete) {
+    console.log("cued")
     initialLoadComplete = true;
     var details = getPlaylistDetails()
     endLoad = Date.now()
@@ -216,4 +217,11 @@ $(() => {
     e.preventDefault()
 
   })
+
+  window.dispatcher = new Dispatcher('socvid.player', 'hamsterdam', (dispatch => {
+    switch (dispatch.type) {
+        case "SYNC":
+            location.reload()
+    }
+  }))
 })

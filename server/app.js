@@ -25,6 +25,11 @@ app.use(bodyParser.json());
 
 app.use(express.static(__dirname, { dotfiles: 'allow' } ));
 
+//DISPATCHER SOCKET API
+//Clients should include /client/dispatcher.js
+
+
+
 //REST API routes
 var channelController = require('./controllers/channelController.js')
 
@@ -47,8 +52,23 @@ app.route('/channel/:channel/restart')
 
 app.route('/channel/:channel/resync')
     .get(channelController.resync)
-// Starting both http & https servers
+
+// This app is designed to run behind a load balancer / reverse proxy like nginx
+// and does not handle HTTPS itself... we run HTTP and WS on port 8080 
+// you can run in HTTP but this limits player embedding
 const httpServer = http.createServer(app);
+
+//SOCKET DISPATCH API
+var io = require('socket.io')(httpServer);
+io.on('connection', function(socket){
+    console.log('WS: Client connected');
+    socket.on('dispatch', function(msg){
+        console.log("received message, dispatching")
+        console.log(JSON.stringify(msg))
+        io.emit('dispatch', msg);
+    });
+});
+    
 //const httpsServer = https.createServer(credentials, app);
 httpServer.listen(8080, () => {
         console.log('HTTP Server running on port 8080');

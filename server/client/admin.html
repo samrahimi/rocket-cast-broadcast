@@ -64,11 +64,13 @@
       </style>
   </head>
   <body>
-  
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="dispatch.js"></script>
     <script src="video.js"></script>
     <script>
         //select channel with querystring ...admin.html?channel=
         selectedChannel = getUrlVars()["channel"] || "TrueLifeTV"
+        window.dispatcher = new Dispatcher('socvid.admin', selectedChannel, (dispatch) => {console.log("received dispatch, ignoring")})
     </script>
     <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
 
@@ -100,6 +102,7 @@
     </div>
 
     <script>
+
       const setOnAir=() => {
         $(".on-air").show()
         $(".off-air").hide()
@@ -125,6 +128,7 @@
         $("input").val("")
         $("input, button").attr("disabled", "disabled")
       }
+
       
       $(() => {
 
@@ -148,7 +152,6 @@
             if (typeof listId === 'undefined' || listId.length == 0) {
                 console.log("Invalid Playlist Url: "+$("#newPlaylistId").val())
                 $(".results").addClass("error").html("ERROR").show()
-
                 updateBroadcastStatus()
                 return
             }
@@ -159,6 +162,10 @@
             setNewPlaylistForChannel(listId, selectedChannel, 
             (json) => {
                 window.channelJson = json
+
+                //tell all currently tuned in players to this channel 
+                //to resync with the server...
+                window.dispatcher.Dispatch("SYNC", {force:true},selectedChannel, "socvid.player")
                 //$("#channelJson").html(JSON.stringify(json, null, 2))
                 $(".results").addClass("success").html("Playlist Updated! Now streaming...").show()
 
@@ -172,6 +179,8 @@
 
             restartPlaylist(selectedChannel, (json) => {
                 window.channelJson = json
+                window.dispatcher.Dispatch("SYNC", {force:true},selectedChannel, "socvid.player")
+
                 //$("#channelJson").html(JSON.stringify(json, null, 2))
                 updateBroadcastStatus()
             })
@@ -183,6 +192,7 @@
                 window.channelJson = json
                 //$("#channelJson").html(JSON.stringify(json, null, 2))
                 $(".results").addClass("success").html("Streaming Stopped.").show()
+                window.dispatcher.Dispatch("SYNC", {force:true},selectedChannel, "socvid.player")
 
                 updateBroadcastStatus()
             });
