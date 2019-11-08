@@ -17,11 +17,11 @@ class Dispatcher {
 
         //handle all incoming broadcasts or those destined for current module & channel
         this.socket.on('dispatch', function(msg){
-            if ((msg.targetModule == this.moduleName || msg.target_module == '*') &&
-            (msg.targetChannel == this.channelID || msg.targetChannel == '*')) {
+            if ((msg.targetModuleId == this.moduleID || msg.targetModuleId == '*') &&
+            (msg.targetChannelId == this.channelID || msg.targetChannelId == '*')) {
                 dispatchHandler(msg)
             }
-        }); 
+        }.bind(this)); 
     }
 
     Dispatch(type, payload, targetChannelId, targetModuleId) {

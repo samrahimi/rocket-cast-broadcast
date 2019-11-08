@@ -78,11 +78,7 @@ function updateMuteUI(isMuted) {
 }
 
 //mute or unmute the video player
-//and update window.isMuted
-//then toggle the mute icon
-//works with any player object that has mute() and unmute() methods
 function setMuteState(playerObj, muteState) {
-
   window.isMuted = muteState
   window.isMuted ? window.player.mute() : window.player.unMute()
   updateMuteUI(isMuted)
@@ -97,6 +93,11 @@ function toggleMuteState(playerObj) {
 function onPlayerReady(event) {
   setMuteState(event.target, true)
   getChannelData(window['selectedChannel'], (json) => {
+    if (json.startTime == 0) {
+      $("#wrapper").hide()
+      $("#offline").show()
+      console.log(`channel id ${window['selectedChannel']} is offline. Waiting for SYNC...`)
+    }
     startLoad = Date.now()
     //cue the playlist. This gets the video IDs without costing me an API call to gdata
     var pl =  {
@@ -175,14 +176,6 @@ function hideControlBarAfter(timeout) {
 }
 
 $(() => {
-  /*
-  $("#unmute-initial").on("click", (e) => {
-    player.unMute(); 
-    $("#unmute-overlay").hide()
-    e.preventDefault()
-
-    //return false
-  }) */
   $("#resync-button").on("click", (e) => {
     resync()
     e.preventDefault()
@@ -192,21 +185,9 @@ $(() => {
     toggleMuteState(player)
   })
 
-  // If user mouses in or taps on the clearcoat (div that blocks the default yt behavior)
-  // we show the control bar with sync, mute, etc... and set a timer to hide it after 5s
-  // If they are interacting with the control bar, we reset the hideControlBarAfter to another 5s 
-  // so it doesn't disappear on them
-
-  /*
-  $("#clearcoat, a.control-button").on("mouseover click", (e) => {
-    $("#controls-overlay").show()
-    hideControlBarAfter(5000)
-    e.preventDefault()
-  }) */
-  /*
-  $("#clearcoat").on("mouseout", (e) => {
-    hideControlBarAfter(5000)
-  }); */
+  //A transparent overlay on top of the video
+  //Gives us a surface to capture user interaction
+  //while preventing them from triggering the 3rd party UI on tap
   $("#clearcoat").on("click", (e) => {
     console.log("clearcoat clicked"); 
     $("#controls-overlay").css("display", "flex")
@@ -218,7 +199,7 @@ $(() => {
 
   })
 
-  window.dispatcher = new Dispatcher('socvid.player', 'hamsterdam', (dispatch => {
+  window.dispatcher = new Dispatcher('socvid.player', window['selectedChannel'], (dispatch => {
     switch (dispatch.type) {
         case "SYNC":
             location.reload()
