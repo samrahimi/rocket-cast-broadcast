@@ -1,7 +1,7 @@
 const db = require('../model/mongo')
 const request = require('request');
 //const youtubeDL = require('youtube-dl')
-const wget = require('wget')
+//const wget = require('wget')
 
 const altYouTubePlaylistUrl = 'https://www.youtube.com/list_ajax?style=json&action_get_list=1&list='
 const youtubeVideoDetailsUrl = 'https://www.googleapis.com/youtube/v3/videos?part=contentDetails&key=AIzaSyDyqJKwMF_vhGqNUmDbbEkvQ55E9ZDhSnc&id='

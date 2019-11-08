@@ -7,15 +7,6 @@ const http = require('http');
 const express = require('express');
 const cors = require('cors')
 const app = express();
-// Certificate
-//const privateKey = fs.readFileSync('/etc/letsencrypt/live/samrahimi.com/privkey.pem', 'utf8');
-//const certificate = fs.readFileSync('/etc/letsencrypt/live/samrahimi.com/cert.pem', 'utf8');
-//const ca = fs.readFileSync('/etc/letsencrypt/live/samrahimi.com/chain.pem', 'utf8');
-//const credentials = {
-//        key: privateKey,
-//        cert: certificate,
-//        ca: ca
-//};
 
 const bodyParser = require('body-parser')
 
@@ -69,14 +60,20 @@ io.on('connection', function(socket){
     });
 });
     
-//const httpsServer = https.createServer(credentials, app);
 httpServer.listen(8080, () => {
         console.log('HTTP Server running on port 8080');
 });
 
-//fuck it, let nginx handle the SSL 
+// Certificate
+//const privateKey = fs.readFileSync('/etc/letsencrypt/live/samrahimi.com/privkey.pem', 'utf8');
+//const certificate = fs.readFileSync('/etc/letsencrypt/live/samrahimi.com/cert.pem', 'utf8');
+//const ca = fs.readFileSync('/etc/letsencrypt/live/samrahimi.com/chain.pem', 'utf8');
+//const credentials = {
+//        key: privateKey,
+//        cert: certificate,
+//        ca: ca
+//};
+//const httpsServer = https.createServer(credentials, app);
 //httpsServer.listen(443, () => {
 //        console.log('HTTPS Server running on port 443');
 //});
-
-console.log("Running")
