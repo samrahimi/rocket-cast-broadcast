@@ -14,7 +14,8 @@ body {
     height: 0;
     width: 100%;
     background-image:url(img/color-bars.jpg);
-    display:none;
+    background-size:cover;
+	display:none;
   }
 
   #wrapper iframe {
