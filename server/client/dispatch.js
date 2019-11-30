@@ -7,13 +7,18 @@ var dispatcher = new Dispatcher('socvid.player', 'hamsterdam', (dispatch => {
             location.reload()
     }
 })) */
+
+//should be same as base URL for socvid REST API
+const socvidServerWsEndpoint="https://samrahimi.com:443"
+const wsOptions = {secure: true, rejectUnauthorized: false}
+
 class Dispatcher {
     constructor(moduleId, channelId, dispatchHandler) {
         this.moduleID = moduleId
         this.channelID= channelId
         //this.dispatchHandler= dispatchHandler
 
-        this.socket = io()
+        this.socket = io.connect(socvidServerWsEndpoint, wsOptions)
 
         //handle all incoming broadcasts or those destined for current module & channel
         this.socket.on('dispatch', function(msg){
