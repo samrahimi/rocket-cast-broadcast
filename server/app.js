@@ -27,6 +27,10 @@ var presenceController = require('./controllers/presenceController.js')
 
 app.route('/proxy/playlist/:playlistId')
     .get(channelController.youtubePlaylistProxy)
+
+    app.route('/config/fixMissingAvatars')
+    .get(channelController.fixMissingAvatars)
+
 app.route('/channel')
     .get(channelController.getAll)
 
@@ -43,6 +47,17 @@ app.route('/channel/:channel/restart')
 
 app.route('/channel/:channel/resync')
     .get(channelController.resync)
+
+app.route('/channel/:channel/setChannelAvatar')
+    .get(channelController.setAvatarForChannel)
+
+
+app.route('/presence')
+    .get(presenceController.getUserPresenceData)
+
+app.route('/presence/clear')
+    .get(presenceController.clearAll)
+
 
 // This app is designed to run behind a load balancer / reverse proxy like nginx
 // and does not handle HTTPS itself... we run HTTP and WS on port 8080 

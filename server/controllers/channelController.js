@@ -1,12 +1,14 @@
 const db = require('../model/mongo')
 const request = require('request');
+const fs = require('fs')
+
 //const youtubeDL = require('youtube-dl')
 //const wget = require('wget')
 
 const altYouTubePlaylistUrl = 'https://www.youtube.com/list_ajax?style=json&action_get_list=1&list='
 const youtubeVideoDetailsUrl = 'https://www.googleapis.com/youtube/v3/videos?part=contentDetails&key=AIzaSyDyqJKwMF_vhGqNUmDbbEkvQ55E9ZDhSnc&id='
 const youtubePlaylistItemsUrl = 'https://www.googleapis.com/youtube/v3/videos?part=contentDetails&key=AIzaSyDyqJKwMF_vhGqNUmDbbEkvQ55E9ZDhSnc&id='
-
+const defaultChannelAvatar= "https://samrahimi.com/client/img/channel-placeholder.png"
 //Controls a channel - get / set the content being broadcast and other info about the stream (ie. start time)
 const opts = {
     bufferLengthInSeconds: 3 //average time for clients to load next video in playlist
@@ -57,6 +59,32 @@ const getAllChannels = (callback) => {
     })
 }
 
+const updateChannelAvatar= (avatarUrl, channelId, callback) => {
+    //To spare us database lookups, the channel avatar is named based on the channel id
+    //so it will always be https://this_server_domain/client/avatars/<channel id>.png
+
+
+    request.head(avatarUrl, function(err, res, body){
+            console.log(`trying to download avatar from ${avatarUrl}`)
+            console.log('content-type:', res.headers['content-type']);
+            console.log('content-length:', res.headers['content-length']);
+            if(res.headers['content-type'] != "image/png") {
+                console.log(`ERROR: content-type must be image/png`)
+                return
+            }
+            request(avatarUrl).pipe(fs.createWriteStream('./avatars/'+channelId+'.png')).on('close', () => {
+                console.log(`avatar download complete for ${avatarUrl}, saved as ./avatars/${channelId}.png`)
+                callback()
+            });
+        });
+}
+
+//A silly hack that copies our placeholder image to the channel avatars folder, named for the channel
+//a waste of disk space but whatever, i need to launch this fucker
+const setDefaultAvatarForChannel = (channelId, callback) => {
+    updateChannelAvatar(defaultChannelAvatar, channelId, callback)
+}
+
 const getPlaylistDetails = (youtubePlaylistId, callback) => {
     console.log('requesting '+altYouTubePlaylistUrl+youtubePlaylistId)
     /*
@@ -84,16 +112,49 @@ module.exports = {
             res.json(results)
         })
     }, 
+    //downloads an image from the internet, and makes it the profile pic
+    //todo: allow direct upload from browser
+    setAvatarForChannel: (req, res) => {
+        let channelId = req.params.channel
+        let remoteAvatarUrl = req.query.avatarUrl
+        updateChannelAvatar(remoteAvatarUrl, channelId, () => {
+            res.end()
+        })
+    },
     //todo: access control
     createOrUpdateChannel: (req, res) => {
         var channel = req.body
         channel.id = req.params.channel
 
-        upsertChannel(channel, (result) => {res.json(result)})
+        upsertChannel(channel, (result) => {
+            //if the channel doesn't have a profile pic, set a placeholder images
+            if (!fs.existsSync('./avatars/'+channel.id+'.png'))
+                setDefaultAvatarForChannel(channel.id, () => {
+                    res.json(result)
+                })
+            else
+                res.json(result)
+        })
     },
     getAll: (req, res) => {
         getAllChannels((channels) => {
+            channels.forEach(channel => {
+
+            })
             res.json(channels)
+        })
+    },
+
+    fixMissingAvatars: (req, res) => {
+        getAllChannels((channels) => {
+            channels.forEach(channel => {
+                if (!fs.existsSync('./avatars/'+channel.id+'.png'))
+                    setDefaultAvatarForChannel(channel.id, () => {
+                        console.log(`Fixed missing avatar for ${channel.id}`)
+                    })
+                 else
+                    console.log(`Found valid avatar for ${channel.id}`)
+            })
         })
     },
     //gets channel data, and calculates the elapsed time if playing
@@ -102,21 +163,29 @@ module.exports = {
 
             //if the channel doesn't exist, create it
             if (channel == null) {
-              channel = {
-                id: req.params.channel,
-                startTime: 0,
-                playlistId: '',
-                channelName: '',
-                channelOwner: '',
-                channelDescription: ''
-              }
+                channel = {
+                    id: req.params.channel,
+                    startTime: 0,
+                    playlistId: '',
+                    channelName: '',
+                    channelOwner: '',
+                    channelDescription: ''
+                }
 
-              //insert into the db on a separate thread 
-              //log the result on the server
-              upsertChannel(channel, (result) => {
-                  console.log("create-on-get new channel")
-                  console.log(result)
-              })
+                //lazy-write the new channel to the db
+                //and set up its profile pic
+                //we don't need to wait to return
+                upsertChannel(channel, (result) => {
+                    console.log("create-on-get new channel")
+
+                    //if we just created a brand new channel, give it a profile pic
+                    if (!fs.existsSync('./avatars/'+channel.id+'.png'))
+                        setDefaultAvatarForChannel(channel.id, () => {
+                            console.log(result)
+                        })
+                    else
+                        console.log(result)
+                })
             }  
    
             //send back the channel with elapsed time, if playing
