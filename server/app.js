@@ -58,9 +58,10 @@ app.route('/channel/:channel/setChannelAvatar')
 app.route('/channel/:channel/viewers')
     .get(presenceController.getViewHistoryForChannel)
 
-//view history for all channels
+//channels with their actual current viewers
+//render in "channel surfer" view
 app.route('/channels/active')
-    .get(presenceController.getUserPresenceData)
+    .get(presenceController.getActiveChannels)
 
 
 //all users who have tuned in at least once, and their 
@@ -116,7 +117,10 @@ io.on('connection', function(socket){
         io.emit('dispatch', msg);
     });
 });
-    
+
+//update channel surfer data every 15 seconds
+presenceController.startChannelSurferAggregationService(15000)
+
 httpServer.listen(8080, () => {
         console.log('HTTP Server  on port 8080');
 });

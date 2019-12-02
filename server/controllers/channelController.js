@@ -63,19 +63,34 @@ const updateChannelAvatar= (avatarUrl, channelId, callback) => {
     //To spare us database lookups, the channel avatar is named based on the channel id
     //so it will always be https://this_server_domain/client/avatars/<channel id>.png
 
-
+    console.log(`Create avatar for ${channelId} from ${avatarUrl}`)
     request.head(avatarUrl, function(err, res, body){
-            console.log(`trying to download avatar from ${avatarUrl}`)
-            console.log('content-type:', res.headers['content-type']);
-            console.log('content-length:', res.headers['content-length']);
-            if(res.headers['content-type'] != "image/png") {
-                console.log(`ERROR: content-type must be image/png`)
-                return
+            if (err)
+            {
+                console.log(err)
+                callback(err)
             }
-            request(avatarUrl).pipe(fs.createWriteStream('./avatars/'+channelId+'.png')).on('close', () => {
-                console.log(`avatar download complete for ${avatarUrl}, saved as ./avatars/${channelId}.png`)
-                callback()
-            });
+            try {
+                console.log('content-type:', res.headers['content-type']);
+                console.log('content-length:', res.headers['content-length']);
+
+                /* 
+                i'm sure it's a bad idea to pretend a jpeg is a png
+                but if the browser allows it, who fucking cares
+
+                if(res.headers['content-type'] != "image/png") {
+                    console.log(`ERROR: content-type must be image/png`)
+                    return
+                } */
+
+                request(avatarUrl).pipe(fs.createWriteStream('./avatars/'+channelId+'.png')).on('close', () => {
+                    console.log(`avatar download complete for ${avatarUrl}, saved as ./avatars/${channelId}.png`)
+                    callback()
+                });
+            } catch(avatarException) {
+                console.log(avatarException)
+                callback(avatarException)
+            }
         });
 }
 
