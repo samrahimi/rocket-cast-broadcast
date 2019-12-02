@@ -1,5 +1,6 @@
 const SV_MAX_VIEW_HISTORY = 100 //save the 100 most recent viewers for each channel
-const SV_IDLE_CUTOFF_MS = 300000  //active means that they've pinged us in the past 5 mins
+const SV_IDLE_CUTOFF_MS = 3600 * 1000  //show a user in channel surfer if their last known location was the channel, 
+                                       //and less than 1h has elapsed
 
 const db = require('../model/mongo')
 const request = require('request');
@@ -50,7 +51,13 @@ const sortAndTrimViewHistory = (channelId) => {
     if (channelViewers[channelId].length > SV_MAX_VIEW_HISTORY)
         channelViewers[channelId] = channelViewers[channelId].slice(0, SV_MAX_VIEW_HISTORY)
 }
+
+let aggregationThread = 0
+
 module.exports = {
+    startChannelSurferAggregationThread: (interval) => {
+
+    },
     updateUserPresence: async(latestUpdate) => {
         if (latestUpdate.channel.channel_type != "c") 
         {

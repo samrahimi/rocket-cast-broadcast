@@ -90,6 +90,8 @@ io.on('connection', function(socket){
                 case "user_presence":
                     var userHistoryForChannel = presenceController.updateUserPresence(msg.payload)
 
+                    /* uncomment to blast out realtime updates to clients on the channel
+                       it's a bad idea to do this before we fix the bug in the socket manager 
                     if (userHistoryForChannel != null) {
                         //broadcast the updated viewer list to clients watching that channel... it should be debounced
                         io.emit('dispatch', {     
@@ -98,7 +100,7 @@ io.on('connection', function(socket){
                             payload: userHistoryForChannel,
                             targetChannelId: msg.payload.channel.channel_name
                         })
-                    }
+                    } */
 
                     break;
                 default:

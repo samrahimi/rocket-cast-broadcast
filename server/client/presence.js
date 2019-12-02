@@ -108,8 +108,11 @@ class UserPresenceDaemon {
         return SV_PRESENCE
     }
 
-    //returns a handle to the internal dispatcher
-    //for use in sending dispatches. try not to fuck it up
+    //Any other script on the page can use this to send Dispatches easily 
+    //Use this to send a one-off message down the socket
+    //without instantiating the presence daemon:  
+    //UserPresenceDaemon.getDispatcher()
+    //                  .Dispatch(type, payload, targetChannelId, targetModuleId) 
     static getDispatcherRef() {
         if (SV_PRESENCE != null)
             return SV_PRESENCE.dispatcher;
