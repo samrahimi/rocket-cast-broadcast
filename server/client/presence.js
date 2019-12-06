@@ -11,10 +11,14 @@ class UserPresenceDaemon {
             moduleName,
             '*',
             (message) => {
-
-                /*
                 console.log("*** SocVid WS Dispatch received in Chat Client ***")
                 console.log(JSON.stringify(message))
+
+                document.dispatchEvent(new CustomEvent("SVDispatchReceived", {
+                    bubbles: true,
+                    detail: message
+                }))
+                /*
                 console.log("*** Raising body.SVDispatchReceived event ***")
                 document.dispatchEvent(new CustomEvent("SVDispatchReceived", {
                     bubbles: true,
@@ -39,6 +43,7 @@ class UserPresenceDaemon {
 
     setChannel(channel) {
         this.channel = channel
+        this.dispatcher.channelID = channel.channel_name;
     }
 
     //if the user and room have been set and the room is still open

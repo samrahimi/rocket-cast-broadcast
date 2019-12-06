@@ -81,9 +81,41 @@ const filterActiveUsers = (channelName, channelRecentUsers) => {
     })
 }
 
+
 let aggregationThread = 0
 
 module.exports = {
+
+    updateChannelSurfer: () => 
+    {
+        console.log("*** WARNING: Regenerate active viewer graph on main I/O Thread, should be asynchronous")
+
+        //go through the channel-viewers map, and filter the viewers 
+        //for each channel against the user's last known channel (in activeUsers)
+        //this way each user is shown in their current or last known channel only
+        let activeChannelArray = [] 
+        Object.keys(channelViewers).forEach(function(key, index) {
+            //put the active channels into an array, after filtering
+            //their viewers for channel surfer purposes
+            activeChannelArray.push({
+                channel_name: key, 
+                //recentViewers: this[key]
+                currentViewers: filterActiveUsers(key, this[key]).slice(0,12)
+            });
+          }, channelViewers);
+    
+          activeChannelArray.sort((a,b) => a.currentViewers.length > b.currentViewers.length)
+          activeChannelArray.reverse()
+          
+          console.log(JSON.stringify(activeChannelArray, null, 2))
+    
+          //the data source for the channel surfer UI... active channels
+          //with their most current viewers
+          channelSurferData= activeChannelArray
+          return channelSurferData
+    
+    },
+    //The above, polled... I'm duplicating code because we might want these to differ
     startChannelSurferAggregationService: (interval) => {
         clearInterval(aggregationThread)
         aggregationThread = setInterval(() => {
@@ -112,7 +144,7 @@ module.exports = {
               channelSurferData= activeChannelArray
         }, interval)
     },
-    updateUserPresence: async(latestUpdate) => {
+    updateUserPresence: (latestUpdate) => {
         if (latestUpdate.channel.channel_type != "c") 
         {
             console.log("Skipping presence update for room type "+latestUpdate.channel.channel_type)

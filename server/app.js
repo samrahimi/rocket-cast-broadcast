@@ -90,9 +90,12 @@ io.on('connection', function(socket){
                 //these messages trigger updates of channel view history, user status, and active channels data
                 case "user_presence":
                     var userHistoryForChannel = presenceController.updateUserPresence(msg.payload)
-
+                    var channelSurferModel = presenceController.updateChannelSurfer()
+                
                     /* uncomment to blast out realtime updates to clients on the channel
-                       it's a bad idea to do this before we fix the bug in the socket manager 
+                       TODO: filter receipients on SERVER (here). This data is only
+                       needed by clients tuned into the channel whose presence data 
+                       was just updated */
                     if (userHistoryForChannel != null) {
                         //broadcast the updated viewer list to clients watching that channel... it should be debounced
                         io.emit('dispatch', {     
@@ -101,7 +104,42 @@ io.on('connection', function(socket){
                             payload: userHistoryForChannel,
                             targetChannelId: msg.payload.channel.channel_name
                         })
-                    } */
+                    }
+
+                    console.log(JSON.stringify({     
+                        type: 'channel_viewers',
+                        targetModuleId: 'socvid.chat',
+                        payload: userHistoryForChannel,
+                        targetChannelId: msg.payload.channel.channel_name
+                    }, null, 2))
+
+                    //This is the "channel surfer", a realtime (<1000ms latency)
+                    //map of who's watching what, right now, actually.
+                    //
+                    //Clients wishing to be awesome should render the latest 
+                    //data to the screen... just set up a dispatcher 
+                    //(like the one you're already using to send your presence updates) and
+                    //handle 'channel_viewers' and 'channel_surfer' message types.
+                    //Eventually we'll have to throttle this down, because it scales at 
+                    //O(n^2) and that's assuming that updateUserPresence and updateChannelSurfer 
+                    //themselves run in Constant Time (which they probably don't).
+
+                    //if we set A to the average events per second emitted by an 
+                    //average viewer (which in reality will go up as activity does, but let's make it constant)
+                    //n is the number of active viewers on the site, then the total incoming events/s is An 
+                    //and for each event, we are broadcasting updates to all n clients.
+                    //Total bandwidth and load on the server is 
+                    //O(An * n) = O(An^2) = O(n^2), JUST FOR THE I/O THREAD, we have no idea 
+                    //about memory or processing for the maps, but those should be OK till they get 
+                    //ridiculously large. We'll need to debounce some stuff, make other stuff by client pubsub.
+                    if (channelSurferModel != null) {
+                        io.emit('dispatch', {     
+                            type: 'channel_surfer',
+                            targetModuleId: 'socvid.chat',
+                            payload: channelSurferModel,
+                            targetChannelId: '*'
+                        })
+                    }
 
                     break;
                 default:
@@ -109,7 +147,12 @@ io.on('connection', function(socket){
                     console.log(JSON.stringify(msg))
                     break;
             }
-            return false 
+            //we're done... we have received a user presence update from the client (right now it's just 
+            //"hi i'm watching 80stv and my name is sam", we've updated our maps of who's watching what, as well as a more
+            //detailed map of viewer history for the channel involved in the update. 
+
+            //instead of the client polling us for  
+            return 
         }
 
         console.log("received message, dispatching")
@@ -118,8 +161,9 @@ io.on('connection', function(socket){
     });
 });
 
-//update channel surfer data every 15 seconds
-presenceController.startChannelSurferAggregationService(15000)
+//periodically, we should update the realtime channel-viewer map
+//otherwise, in periods of low activity, it could get stale
+//fuck it. presenceController.startChannelSurferAggregationService(15000)
 
 httpServer.listen(8080, () => {
         console.log('HTTP Server  on port 8080');
