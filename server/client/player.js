@@ -176,6 +176,21 @@ function hideControlBarAfter(timeout) {
 }
 
 $(() => {
+  document.fullscreenEnabled =
+	document.fullscreenEnabled ||
+	document.mozFullScreenEnabled ||
+	document.documentElement.webkitRequestFullScreen;
+
+  const requestFullscreen= (element) => {
+    if (element.requestFullscreen) {
+      element.requestFullscreen();
+    } else if (element.mozRequestFullScreen) {
+      element.mozRequestFullScreen();
+    } else if (element.webkitRequestFullScreen) {
+      element.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+    }
+  }
+  
   $("#resync-button").on("click", (e) => {
     resync()
     e.preventDefault()
@@ -184,6 +199,17 @@ $(() => {
   $("#mute-unmute-button").on("click", () => {
     toggleMuteState(player)
   })
+
+
+  $("#fullscreen-button").on("click", () => {
+    if (document.fullscreenEnabled) {
+      var el = document.documentElement
+      requestFullscreen(el)    
+    } else {
+      alert("Get a better phone, hamster!")
+    }
+  })
+
 
   //A transparent overlay on top of the video
   //Gives us a surface to capture user interaction
