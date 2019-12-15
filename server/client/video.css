@@ -2,6 +2,9 @@ body {
     margin: 0;
     padding: 0;
   }
+  .off{
+    background-color:black;
+  }
   #wrapper {
       position: relative;
       padding: 0 0 56.25% 0;
@@ -68,15 +71,16 @@ body {
     background-color:black;
     opacity: 0.7;
     display:none;
-    color:white !important;
     font-family: sans-serif;
-    font-size:16px !important;
+    font-size:14px !important;
+    font-weight: bold;
+    color: rgb(22, 108, 240)
 }
 
 a.youtube-title {
-  text-decoration: underline;
+  text-decoration: none;
   cursor: pointer;
-  color: white !important;
+  color: rgb(22, 108, 240) !important;
 }
 
 
@@ -99,7 +103,7 @@ a.youtube-title {
   #controls-overlay .control-buttons {
     flex-grow: 0;
     flex-shrink: 0;
-    flex-basis: 100px;
+    flex-basis: 120px;
     margin-left:10px;
   }
 

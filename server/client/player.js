@@ -37,28 +37,40 @@ function onYouTubeIframeAPIReady() {
 }
 
 function updatePlayerState() {
-    var state= {
-        currentTime: player.getCurrentTime(),
-        duration: player.getDuration(),
-        videoUrl: player.getVideoUrl(),
-        //playlistUrl: player.getPlaylistUrl(),
-        playerState: player.getPlayerState(),
-        title: player.getVideoData().title 
+    var state = {}
+
+    if (player == null) {
+      state = {powerOff:true}
     }
+    else {
+     state= {
+          currentTime: player.getCurrentTime(),
+          duration: player.getDuration(),
+          videoUrl: player.getVideoUrl(),
+          //playlistUrl: player.getPlaylistUrl(),
+          playerState: player.getPlayerState(),
+          title: player.getVideoData().title 
+      }
+   }
 
     
     if (state.duration && state.duration != 0) {
         $(".progress-elapsed-time").html(toHHMMSS(state.currentTime))
         $(".progress-total-time").html(toHHMMSS(state.duration))
     } else {
-        $(".progress-elapsed-time").html('')
-        $(".progress-total-time").html('')
+        $(".progress-elapsed-time").html('--:--')
+        $(".progress-total-time").html('--:--')
     }
 
     if (state.videoUrl) {
         $(".youtube-link").attr("href", state.videoUrl)
         $(".youtube-title").html(state.title)
     }
+
+    if (state.powerOff) {
+      $(".youtube-link").attr("href", "#")
+      $(".youtube-title").html("Press the Power Button to resume...")
+  }
 }
 
 function pollPlayerState(timeout) {
@@ -72,9 +84,9 @@ function pollPlayerState(timeout) {
 
 function updateMuteUI(isMuted) {
   if (isMuted) 
-    $("#mute-unmute-icon").attr("name", "volume-high")
-  else
     $("#mute-unmute-icon").attr("name", "volume-off")
+  else
+    $("#mute-unmute-icon").attr("name", "volume-high")
 }
 
 //mute or unmute the video player
@@ -176,20 +188,6 @@ function hideControlBarAfter(timeout) {
 }
 
 $(() => {
-  document.fullscreenEnabled =
-	document.fullscreenEnabled ||
-	document.mozFullScreenEnabled ||
-	document.documentElement.webkitRequestFullScreen;
-
-  const requestFullscreen= (element) => {
-    if (element.requestFullscreen) {
-      element.requestFullscreen();
-    } else if (element.mozRequestFullScreen) {
-      element.mozRequestFullScreen();
-    } else if (element.webkitRequestFullScreen) {
-      element.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
-    }
-  }
   
   $("#resync-button").on("click", (e) => {
     resync()
@@ -200,16 +198,66 @@ $(() => {
     toggleMuteState(player)
   })
 
+  	/* Social Fullscreen Hook */
+	document.fullscreenEnabled =
+	document.fullscreenEnabled ||
+	document.mozFullScreenEnabled ||
+	document.documentElement.webkitRequestFullScreen;
+
+	/* globally available fullscreen */
+	window["FS"] = {
+		requestFullscreen: (element) => {
+			if (element.requestFullscreen) {
+			element.requestFullscreen();
+			} else if (element.mozRequestFullScreen) {
+			element.mozRequestFullScreen();
+			} else if (element.webkitRequestFullScreen) {
+			element.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+			}
+    },
+    toggleFullscreen: (el) => {
+      {
+        if (document.fullscreenEnabled && document.fullscreenElement) {
+          console.log("Player.js: quit fullscreen")
+          document.exitFullscreen();
+          return true;
+        } 
+        else {
+          if (document.fullscreenEnabled)
+          {
+            window.FS.requestFullscreen(el)
+            console.log("Player.js: start fullscreen")
+            return true;
+          }
+          else
+          {
+            console.log("Player.js: fullscreen not available on this browser or device")
+            return true;
+          }
+        }
+      }
+    }
+  }
 
   $("#fullscreen-button").on("click", () => {
     if (document.fullscreenEnabled) {
       var el = document.documentElement
-      requestFullscreen(el)    
+      window.FS.toggleFullscreen(el)    
     } else {
-      alert("Get a better phone, hamster!")
+      alert("To watch in full screen mode, please view with Chrome or Firefox")
     }
   })
 
+  $("#power-button").on("click", () => {
+    if (player && player != null) {
+      player.destroy()
+      player = null
+      updatePlayerState() //puts prompt text in the top bar telling you how to turn it on again
+    } else {
+      resync()            //refreshes the page, therefore turning the tv back on lol
+    }
+    e.preventDefault();
+  })
 
   //A transparent overlay on top of the video
   //Gives us a surface to capture user interaction
