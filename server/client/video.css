@@ -51,13 +51,14 @@ body {
       z-index:1999;
       width:100%;
       height:24px;
-      padding:6px 0px 3px 0px;
+      padding:10px 0px 3px 0px;
       background-color:black;
       opacity: 0.7;
       display:none;
       flex-direction:row;
       align-items: center;
       justify-content: center;
+      overflow:hidden
   }
 
   #title-overlay {
@@ -66,7 +67,7 @@ body {
     left: 0px;
     z-index:1999;
     width:100%;
-    height:24px;
+    height:20px;
     padding:5px;
     background-color:black;
     opacity: 0.7;
@@ -78,6 +79,10 @@ body {
 }
 
 a.youtube-title {
+  display:inline-block;
+  height:14px;
+  padding:0;
+  overflow:hidden;
   text-decoration: none;
   cursor: pointer;
   color: rgb(22, 108, 240) !important;
@@ -108,18 +113,46 @@ a.youtube-title {
   }
 
   #controls-overlay .progress {
-    flex-grow:2;
+    flex: 1 1 auto;
     color:white !important;
     font-family: sans-serif;
     font-size:16px !important;
     text-align:center;
+    height:24px;
+    overflow:hidden;
   }
   #controls-overlay .whatevs {
-    flex-grow: 0;
-    flex-shrink: 0;
-    flex-basis: 100px;
-    text-align: center;
+    flex: 0 1 110px;
+    overflow:hidden;
+    text-align: right;
   }
+
+  @media (max-width: 400px) {
+    #controls-overlay .whatevs {
+      display:none /*hide the floating ibroadcast logo when space gets tight */
+    }
+
+    #controls-overlay .progress {
+      text-align: right; /* without the logo, put the progress meter on the right */
+      padding-right: 5px;
+    }
+  }
+
+  @media (max-width: 300px) {
+    #controls-overlay {
+      justify-content:left; /* without the progress to fill the space, we have only 1 item in the flexbox, and we want it on the left */
+    }
+
+    #controls-overlay .progress {
+      display:none; /* for ultra-small devices and clever embedding applications, the progress may be shown externally by the client */
+    }
+  }
+    @media (max-width: 200px) {
+    #title-overlay {
+      display:none; /* when used as a music player, hide all but the control buttons! */  
+    }
+  }
+
   #controls-overlay .control-buttons a {
     color:white;
     font-size: 24px;
