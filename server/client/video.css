@@ -108,7 +108,7 @@ a.youtube-title {
   #controls-overlay .control-buttons {
     flex-grow: 0;
     flex-shrink: 0;
-    flex-basis: 120px;
+    flex-basis: 130px;
     margin-left:10px;
   }
 

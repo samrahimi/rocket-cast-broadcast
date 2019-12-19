@@ -10,9 +10,9 @@ window["__RC"] = {
 
                                             return html;
                                             },
+
     getChannelSurferHtml: (channels) => {
        var html = ""
-
        channels.forEach(channel => 
            {
                html+= `
@@ -69,32 +69,34 @@ window["__RC"] = {
                </a>
            </li>
            `})
+           console.log("RENDER: channel surfer")
 
        return html
+
     },
    
     getRecentViewerHtml: (viewers, roomInstance) => {
-    viewers.reverse() //truelife server is sorting backwards, TODO fix presenceController
-    let maxAge = 86400 * 1000
-    let thumbs = ``
-
-    viewers.forEach(viewer => {
-        thumbs += 
-        `<a class="recentViewer" title="${viewer.display_name}" href="${viewer.profile_url}" target="_blank">
-            <img alt="Picture of ${viewer.display_name}" src="${viewer.avatar_url}" />
-            ${Date.now() - viewer.last_activity < maxAge ? '<div class="status-bullet-online"></div>': ''}
-        </a>`
-    })
-
-    let onlineNow = viewers.filter(x => Date.now() - x.last_activity < maxAge).length
-    roomInstance.activeViewerCount.set(onlineNow)
-
-    return thumbs;
+        
+        viewers.reverse() //truelife server is sorting backwards, TODO fix presenceController
+        let maxAge = 3600 * 1000
+        let thumbs = ``
+    
+        viewers.forEach(viewer => {
+            thumbs += 
+            `<a class="recentViewer" title="${viewer.display_name}" href="${viewer.profile_url}" target="_blank">
+                <img alt="Picture of ${viewer.display_name}" src="${viewer.avatar_url}" />
+                ${Date.parse(new Date().toUTCString()) - viewer.last_activity < maxAge ? '<div class="status-bullet-online"></div>': ''}
+            </a>`
+        })
+    
+        let onlineNow = viewers.filter(x => Date.now() - x.last_activity < maxAge).length
+        roomInstance.activeViewerCount.set(onlineNow)
+    
+        return thumbs;
     },
 
     getAllChannelsHtml: (channels, showViewers = true) => {
         var html = ""
- 
         channels.forEach(channel => 
             {
                 html+= `
@@ -145,7 +147,8 @@ window["__RC"] = {
                 </a>
             </li>
             `})
- 
+            console.log("RENDER: all channels")
+
         return html
     }
  
