@@ -147,11 +147,6 @@ io.on('connection', function(socket){
                     console.log(JSON.stringify(msg))
                     break;
             }
-            //we're done... we have received a user presence update from the client (right now it's just 
-            //"hi i'm watching 80stv and my name is sam", we've updated our maps of who's watching what, as well as a more
-            //detailed map of viewer history for the channel involved in the update. 
-
-            //instead of the client polling us for  
             return 
         }
 
@@ -165,14 +160,16 @@ io.on('connection', function(socket){
 //otherwise, in periods of low activity, it could get stale
 //fuck it. presenceController.startChannelSurferAggregationService(15000)
 
+
+//If using nginx, no need for ssl here - set the backend url to http://localhost:8080 
 httpServer.listen(8080, () => {
         console.log('HTTP Server  on port 8080');
 });
+const restorePresenceData = (filename) => {}
+restorePresenceData('seed_data/channelsurfer.json') //a nice idea...
 
-//I recommended putting this behindrunning a reverse proxy or load balancer like nginx...
-//and letting that system deal with HTTPS. It's faster and more secure. But if you 
-//want to do it here, just use the code below as a guide
-// Certificate
+//To run HTTPS directly, use the following 
+
 //const privateKey = fs.readFileSync('/etc/letsencrypt/live/samrahimi.com/privkey.pem', 'utf8');
 //const certificate = fs.readFileSync('/etc/letsencrypt/live/samrahimi.com/cert.pem', 'utf8');
 //const ca = fs.readFileSync('/etc/letsencrypt/live/samrahimi.com/chain.pem', 'utf8');
