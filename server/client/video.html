@@ -16,6 +16,7 @@
       <link rel="stylesheet" href="video.css" />
   </head>
   <body>
+
     <script>
         //select channel with querystring ...admin.html?channel=
         window['selectedChannel'] = getUrlVars()["channel"] || "TrueLifeTV"
@@ -36,8 +37,8 @@
         <a href="#" id="resync-button"><ion-icon name="pulse"></ion-icon></a>&nbsp;
         <a href="#" id="mute-unmute-button"><ion-icon id="mute-unmute-icon" name="volume-high"></ion-icon></a>&nbsp;
         <a href="#" id="fullscreen-button"><ion-icon name="expand"></ion-icon></a>&nbsp;
-        <a href="#" id="power-button"><ion-icon name="power"></ion-icon></a>
-
+        <a href="#" id="power-button"><ion-icon name="power"></ion-icon></a>&nbsp;
+        <a href="#" class="modal-toggle" id="get-embed"><ion-icon name="code"></ion-icon></a>
         </div>
 
         <div class="progress">
@@ -63,6 +64,7 @@
     </div>
     <div id="offline"></div>
 
+  
     <!-- Controls the player logic and its UI -->
     <script src="player.js"></script>
     <!-- use the ionic framework icons to match the parent UI, without including the framework -->

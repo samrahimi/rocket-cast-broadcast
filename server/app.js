@@ -162,7 +162,7 @@ io.on('connection', function(socket){
 
 
 //If using nginx, no need for ssl here - set the backend url to http://localhost:8080 
-httpServer.listen(8080, () => {
+httpServer.listen(process.env.PORT || 8080, () => {
         console.log('HTTP Server  on port 8080');
 });
 const restorePresenceData = (filename) => {}

@@ -1,3 +1,6 @@
+var SERVER_BASE_URL = 'https://broadcast.svn.im'
+
+
 // Read a page's GET URL variables and return them as an associative array.
 // By default, window.location.href is considered the current URL
 // You can override by passing any URL string
@@ -34,14 +37,10 @@ const isDev = () => {
 //For MVP, the player front end and
 const serverUrl= !isDev() ? 
                 '' : 
-                'http://samrahimi.com' //if running on a different host then the front end, otherwise leave blank
-const defaultChannelUrl= !isDev() ? 
-                '/channel/TrueLifeTV' : 
-                'http://samrahimi.com/channel/TrueLifeTV'
+                SERVER_BASE_URL //if running on a different host then the front end, otherwise leave blank
 
+const defaultChannelUrl= serverUrl+"/channel/general"
 
-//Get your own key by going to google cloud api console, youtube API v3. The one below works only for truelife sites
-//const youtubeAPIUrl = 'https://www.googleapis.com/youtube/v3/videos?part=contentDetails&key=AIzaSyDyqJKwMF_vhGqNUmDbbEkvQ55E9ZDhSnc&id='
 channelData = {};
 playlistDetails=[]
 

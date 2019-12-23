@@ -14,5 +14,6 @@
     "mongodb": "^3.3.3",
     "request": "^2.88.0",
     "socket.io": "^2.3.0",
+    "webtorrent": "^0.107.17"
   }
 }

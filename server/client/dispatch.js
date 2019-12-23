@@ -9,7 +9,7 @@ var dispatcher = new Dispatcher('socvid.player', 'hamsterdam', (dispatch => {
 })) */
 
 //should be same as base URL for socvid REST API
-const socvidServerWsEndpoint="https://samrahimi.com:443"
+const socvidServerWsEndpoint="https://broadcast.svn.im:443"
 const wsOptions = {secure: true, rejectUnauthorized: false}
 
 class Dispatcher {
