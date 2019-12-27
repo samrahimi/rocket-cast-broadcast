@@ -1,0 +1,121 @@
+<html>
+  <body>
+    <style>
+      body {
+        font-family: 'OpenSans', 'Helvetica', 'Arial', 'sans-serif';
+        font-size: 12px;
+      }
+      #messages {
+        flex:1 1 auto; 
+        border: solid 1px black;
+        height: 500px;  
+        padding: 20px;  
+      }
+
+      #users {
+        flex: 0 0 300px;
+        border: solid 1px black;
+        height: 500px; 
+        padding: 20px;   
+      }
+    </style>
+
+    <h2 id="channelName"></h2>
+    <div style="display:flex; max-width:800px">
+      <div id="messages">
+        <h3>Messages</h3>
+      </div>
+      <div id="users">
+        <h3>Users</h3>
+      </div>
+    </div>
+    <div style="margin-top:20px">
+    <input type="text" id="outgoing" placeholder="Say something, asshole" style="width:700px" />   
+    <input type="button" id="sendMessage" value="Send Message" />
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="js/app.min.js"></script>
+    <script>
+      var RTCManager, Room
+      var sendToAll = (message) => {
+        var peers = RTCManager.Peers
+        var p=[]
+
+        for (let key in peers){
+          if(peers.hasOwnProperty(key)){
+            p.push(peers[key])
+          }
+        }
+
+        var peerConnections = p.filter(x => x.connection && x.connection != null).map(y => y.connection)
+        peerConnections.forEach(connectedPeer => {
+          connectedPeer.send(message)
+        })
+      }
+      $(document).ready(() => {        
+        var channelName = window.location.hash.substring(1)
+        $("#channelName").html("#"+channelName)
+
+        var yourname = prompt("Enter your name")
+        $("#users").append(yourname+"<br />")
+
+        ServerlessSignalHub.init(channelName, 
+        {name: yourname}, 
+        (hooks) => {
+          RTCManager = hooks.rtcManager
+          Room = hooks.Room
+
+          RTCManager.on("peer_connected", (peer) => {
+            $("#users").append(peer.name+"<br />")
+          })
+
+          RTCManager.on("peer_data_received", (data) => {
+            var name = data.peer.name
+            var msg = data.data
+            $("#messages").append(`<p><b>${name}</b>: ${msg}</p>`)
+          })
+
+          $("#sendMessage").on("click", () => {
+            sendToAll($("#outgoing").val())
+            $("#messages").append(`<p><b>${yourname}</b>: ${$("#outgoing").val()}</p>`)
+            $("#outgoing").val("")
+          })
+        })
+      })
+      /*
+      const p = new SimplePeer({
+        initiator: location.hash === '#1',
+        trickle: false
+      })
+
+      p.on('error', err => console.log('error', err))
+
+      p.on('signal', data => {
+        console.log('SIGNAL', JSON.stringify(data))
+        document.querySelector('#outgoing').textContent = JSON.stringify(data)
+      })
+
+      document.querySelector('form').addEventListener('submit', ev => {
+        ev.preventDefault()
+        p.signal(JSON.parse(document.querySelector('#incoming').value))
+      })
+
+      p.on('connect', () => {
+        console.log('CONNECT')
+        p.send('whatever' + Math.random())
+      })
+
+      p.on('data', data => {
+        console.log('data: ' + data)
+      }) */
+
+    </script>
+
+    <p>This is a totally decentralized chat. You subscribe to the hashtag in the url 
+       using ipfs-pubsub and discover other peers who are subscribed... you then 
+       upgrade to direct webrtc connections with all the peers in the room 
+       and the chat is carried over webrtc transport (ipfs is a piece of shit, and definitely not realtime)
+    </p>
+  </body>
+</html>
