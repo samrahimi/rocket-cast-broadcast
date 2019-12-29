@@ -4,6 +4,10 @@ module.exports = (room, me) => {
 
 const RTCPeer = require('simple-peer')
 const EventEmitter = require('events');
+
+//gateways that help the peers connect in spite of NAT
+//these credentials are shared in the official webrtc github
+//please add to this list as you collect other such endpoints
 const peerConfig =  
 {
     "iceServers":[

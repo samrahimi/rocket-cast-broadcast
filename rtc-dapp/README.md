@@ -1,21 +1,41 @@
-# IPFS Pubsub Room Demo
+# Demonstrating the power of p2p in the browser
 
-Links:
-
-- [Demo script](SCRIPT.md)
-- [Demo video](https://www.youtube.com/watch?v=Nv_Teb--1zg)
+Realtime p2p videoconferencing over webrtc, browser-browser with no servers, 
+thanks to a distributed signaling solution that uses ipfs-pubsub as a transport. 
+Note that the bundle is ~7 megs because you're running a full libp2p and ipfs stack 
+in your browser :)
 
 ## Pre-requisites
 
-* Have Node.js version 6 or greater installed
+* Most recent stable version of Node and npm
+* Browserify CLI (npm install -g browserify)
 
-## Install
+## Install dependencies
 
 ```
-$ git clone https://github.com/ipfs-labs/ipfs-pubsub-room-demo.git
-$ cd ipfs-pubsub-room-demo
-$ npm install
+$ cd quantum-orangutan
+$ sudo npm install -g --unsafe-perm=true --allow-root
 ```
+
+On Mac OS the unsafe perms are needed to compile necessary networking libraries. At least on my system.
+
+## Build (debug)
+
+```
+$ npm run-script compile
+```
+
+Browserify builds the node-style networking code starting from index.js
+down the tree, into public/app.js - which lets any UI code communicate with the network. 
+
+
+## Build (release)
+
+```
+$ npm run-script build
+```
+
+Leaves out the debug symbols, resulting in a 3x smaller bundle. Which is still way too big :P
 
 ## Run
 
@@ -25,9 +45,15 @@ $ npm start
 
 ## Open in browser
 
-Using a modern browser that supports WebRTC, like a recent version of Chrome or Firefox, open several windows of [http://localhost:12345](http://localhost:12345).
+Using a recent version of Chrome or Firefox, open [http://localhost:12345#quantum-orangutan]
+(http://localhost:12345#quantum-orangutan). 
 
-Open the browser console and look at the logs.
+Maybe you'll see me there. 
+
+If you wanna make a donation to the Church of P2P, we accept bitcoin, ether, arweaves, random 
+ tokens, hard currency, hardware, and whatever else :)
+
+Check the console logs to understand the eonnction process, it is kinda cool.
 
 ## License
 

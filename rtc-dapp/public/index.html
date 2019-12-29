@@ -19,13 +19,10 @@
             <p>
               <b>Serverless Host: </b>welcome to the decentralized playground where anything is possible.
               This is true end to end serverless videoconferencing: identity management in the arweave blockchain, 
-              Peer discovery and webrtc signaling via IPFS, and joining a mesh network with anyone 
-              else on this channel for realtime exchange of data and live audio/video. <br /><br />
+              Peer discovery and webrtc signaling via IPFS, to create ad-hoc realtime mesh network with anyone 
+              else currently on the channel. <br /><br />
 
-              Please wait a few seconds to join the swarm and discover other peers on the channel via the IPFS hash tree. They 
-              and their video will show up under yours. Anything you share in this channel disappears from the internet once 
-              everyone closes the tab... nothing stored on your machine, nothing stored in the cloud, and your media traffic 
-              is encrypted before being sent over the wire.
+              Please wait a few seconds to join the swarm and connect to peers on your channel.
             </p>
 
           </div>
@@ -49,9 +46,11 @@
     
 
 
-    <script src="js/app.min.js"></script>
+    <script src="js/app.js"></script>
     <script>
       var RTCManager, Room
+      var ActiveStreams = {}
+
       const sendToAll = (message) => {
         var peers = RTCManager.Peers
         var p=[]
@@ -69,24 +68,28 @@
       }
       const addStreamToUI=(livestream, name) => {
         var template=`
-          <div class="videostream" style="margin-bottom:20px">
+          <div class="videostream" id="stream_${name}" style="margin-bottom:20px">
               <video id="video_${name}" autoplay muted width="100%"></video><br />
               <b>${name}</b>
           </div>
         `
 
-        $("#users").append(template)
+         //ignore duplicate onstream events from rtc stack
+          if (ActiveStreams[name]) {
+            return false
+          }
+          ActiveStreams[name] = true;
 
+          $("#users").append(template)
 
-        var video = document.querySelector('#video_'+name)
+          var video = document.querySelector('#video_'+name)
 
-        if ('srcObject' in video) {
-          video.srcObject = livestream
-        } else {
-          video.src = window.URL.createObjectURL(livestream) // for older browsers
-        }
-
-        video.play()
+          if ('srcObject' in video) {
+            video.srcObject = livestream
+          } else {
+            video.src = window.URL.createObjectURL(livestream) // for older browsers
+          }
+          video.onload = (() => video.play())
       }
 
       $(document).ready(() => {        
@@ -140,18 +143,6 @@
     </script>
 
 
-    <p><b>New Stun Servers!</b> This is a totally decentralized chat. You subscribe to the hashtag in the url 
-       using ipfs-pubsub and discover other peers who are subscribed... you then 
-       upgrade to direct webrtc connections with all the peers in the room 
-       and the chat is carried over webrtc transport (ipfs is a piece of shit, and definitely not realtime)</p>
-
-    <p>
-      The movie function loads any torrent, as long as it's being seeded by someone with a webrtc 
-      compatible torrent app or someone else using mesh-tv. If it doesn't work, get the webtorrent.io 
-      app, start downloading on your computer, and get the infohash from there... 
-      you will seed everyone else in the room!
-   </p>
-    </p>
 
         <!-- jQuery first, then Popper.js, then Bootstrap JS -->
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
